@@ -115,6 +115,20 @@ Incident references are maintained separately and can be provided as audit evide
 - [English](STANDARD.md)
 - [Русский](translations/STANDARD_RU.md)
 
+## FAQ
+
+**Q: Do I need this if my agent only uses JSON files, not databases?**
+A: Yes. Sections 0 (System Map) and F (Feedback Loop) apply regardless of storage format. JSON files are stores too — they grow, they accumulate duplicates, they can be poisoned by model output.
+
+**Q: How long does an audit take?**
+A: First audit: 4–8 hours (including preparation). Subsequent audits of the same system: 1–2 hours (focus on changed sections).
+
+**Q: My system passes all unit tests. Do I still need this?**
+A: Unit tests verify code correctness. This standard verifies memory integrity. Shadow config, orphan execution, stale seed, and feedback loops all pass unit tests while silently degrading the system.
+
+**Q: Is this compatible with OWASP LLM Top 10?**
+A: They are complementary, not competing. OWASP covers security threats (prompt injection, data poisoning). MAQS covers memory quality (recursion, degradation, context integrity). A robust system needs both.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

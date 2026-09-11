@@ -6,6 +6,22 @@
 
 ---
 
+## Glossary
+
+| Term | Definition |
+|------|-----------|
+| **Store** | Any persistence layer holding memory data: SQLite database, vector index, JSON file, RAM cache, graph database |
+| **Provenance** | The origin record of a memory entry: who created it, when, from which source, in which session |
+| **Feedback contamination** | When model-generated output is stored as memory and later retrieved as if it were external input, creating a self-reinforcing loop |
+| **Alive memory** | A memory entry protected from summarization and decay due to its emotional or cultural significance; capped by a maximum count |
+| **Blind truncation** | Cutting text at a character/token limit (`text[:limit]`) without regard for semantic boundaries; prohibited by this standard |
+| **Bare call** | A summarization/compression API call that does not carry conversation history and does not write results back to memory |
+| **Decay** | Gradual reduction of a memory entry's importance score over time, typically exponential (e.g., Ebbinghaus curve) |
+| **Bridge** | A controlled injection point connecting two isolated memory stores; the only permitted path for cross-store data flow |
+| **Guardian** | A system-level orchestrator responsible for starting, stopping, monitoring, and diagnosing all assistant processes |
+
+---
+
 ## 1. Reference Loop Model
 
 The audit follows a generalized memory loop. Each checklist item maps to a node or edge in this model.
@@ -22,6 +38,20 @@ INPUT (user, files, web, images, other agents, external models)
 ```
 
 The critical property is closure: anything that enters memory returns to the model and can reproduce itself. Most severe memory failures are edge failures, not node failures.
+
+### Loop → Sections Mapping
+
+| Loop Node | Primary Sections | What Is Checked |
+|-----------|-----------------|-----------------|
+| INPUT | A | Validation, secrets, trust filtering |
+| INGESTION | A, B | Meaning extraction, write integrity |
+| STORAGE | B, C, G | Idempotency, growth, isolation |
+| RETRIEVAL | D | Ranking, gating, embedding compatibility |
+| ASSEMBLY | E | Summarization, budgets, positioning |
+| MODEL/LLM | — | (Outside scope of this standard) |
+| OUTPUT | E, I | Actions, commands, observability |
+| FEEDBACK | F | Anti-recursion, echo prevention |
+| Cross-cutting | H, I, J | Concurrency, recovery, change management |
 
 ---
 
