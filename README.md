@@ -23,6 +23,25 @@ Covers the full memory loop: ingestion → storage → retrieval → context ass
 - **Architects** designing memory layers for LLM agents
 - **Anyone** who has experienced silent memory degradation and wants to prevent it
 
+## Common Problems This Standard Addresses
+
+If your AI agent or LLM assistant has any of these symptoms, this checklist will help you find and fix the root cause:
+
+- **Agent repeats itself** — says the same thing every conversation, stuck in a loop
+- **Agent forgets everything** after restart — personality resets, context lost
+- **Memory grows uncontrollably** — database doubles in size after every reindex
+- **Agent "hallucinates" its own memories** — confidently recalls things that never happened
+- **Context degradation** — responses get worse over time, slowly, silently
+- **Feedback loops** — agent analyzes its own reports, writes summaries of summaries
+- **Stale information persists** — agent keeps mentioning outdated facts despite corrections
+- **Embedding search returns garbage** — after model change, semantic search breaks silently
+- **Truncated context** — memories cut off mid-sentence, `text[:limit]` destroys meaning
+- **Log files grow to hundreds of MB** — blocking diagnostics and agent operations
+- **Tests pass but agent is broken** — unit tests green, production behavior degraded
+- **Agent can't distinguish its own output from user input** — self-contamination loop
+
+Each symptom maps to specific checklist items. See **Section K (Quick Diagnostics)** in the standard for the full symptom → defect mapping.
+
 ## Quick Start
 
 1. Download [`STANDARD.md`](STANDARD.md) (English) or [`translations/STANDARD_RU.md`](translations/STANDARD_RU.md) (Russian)
@@ -123,3 +142,12 @@ You are free to share, adapt, and build upon this standard — even commercially
 ---
 
 *If this standard helped you prevent a memory incident — consider starring the repo. If it didn't prevent one — consider contributing the incident as a new checklist item.*
+
+---
+
+<details>
+<summary>Keywords (for search engines)</summary>
+
+LLM memory management, AI agent persistent memory, chatbot memory leak, LLM context degradation, AI assistant forgets context, persistent memory recursion, feedback loop prevention, AI memory poisoning, LLM agent memory architecture, context window optimization, memory-safe AI development, AI agent audit checklist, LLM memory quality standard, chatbot repeats itself fix, AI agent context loss, embedding model mismatch, silent failures AI agents, LLM memory anti-recursion, persistent memory feedback loop, AI assistant personality loss restart, memory truncation vs summarization, AI agent diagnostic checklist
+
+</details>
