@@ -82,7 +82,10 @@ Ensure the test environment is isolated from production stores: tempfile/in-memo
 **Step P7. Check log file sizes.**
 Before starting the audit, check the size of all log files. Uncontrolled log growth (hundreds of MB) blocks the auditing agent and makes analysis impossible. For each log exceeding a threshold (e.g., 50MB): create a rotated copy (`mv app.log app.log.YYYYMMDD`), create an empty file with the same name (`touch app.log`). Do not delete old logs — they may contain incident evidence.
 
-Only after completing steps P1–P6 can the section-by-section audit begin.
+**Step P8. Runtime environment awareness.**
+Record the system uptime and the date of last OS/package updates before starting the audit. Accumulated runtime state (process caches, updated but not reloaded libraries, stale compiled bytecode) can mask or mimic memory defects. If a defect disappears after a system restart, it is a runtime environment issue, not a memory architecture defect — document it separately and do not count it against the standard.
+
+Only after completing steps P1–P8 can the section-by-section audit begin.
 
 ### 2.2. Conducting the Audit
 
