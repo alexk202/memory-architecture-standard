@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.3 (2026-09-08)
+**Version:** 1.3 (2026-09-15)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
