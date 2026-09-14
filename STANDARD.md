@@ -183,6 +183,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **D6** Thresholds, limits, and retrieval weights are externalized to configuration, not hardcoded as magic numbers. **[REC]**
 - [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. **[CRIT]**
 - [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. **[CRIT]**
+- [ ] **D9** Results from external sources (web search, file read, RAG) are filtered against the active semantic context of the current session before entering context assembly. A keyword match with zero conceptual relevance to the current dialog is marked as low-relevance or excluded. Without this filter, a query for "Apple" during a programming discussion may return a pie recipe instead of a framework reference. **[IMP]**
 
 ## Section E. Context Assembly (ASSEMBLY)
 
@@ -302,7 +303,7 @@ System map completed:   yes / no (if no — audit is not complete)
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
 | C. Growth             | 7  | | | | | |
-| D. Retrieval          | 8  | | | | | |
+| D. Retrieval          | 9  | | | | | |
 | E. Assembly           | 11 | | | | | |
 | F. Feedback loop      | 6  | | | | | |
 | G. Isolation          | 7  | | | | | |

@@ -5,7 +5,7 @@ All notable changes to the Memory Architecture Quality Standard.
 ## [Unreleased]
 *Ideas and candidates for next version — not yet implemented.*
 
-- D9: Retrieval precision measurement on golden set
+- ~~D9: Retrieval precision measurement on golden set~~ → implemented as D9: Conceptual Gating of External Tools
 - G8: Forgetting cascade (GDPR right to be forgotten — coordinated deletion across all stores)
 - `docs/VERIFICATION_QUERIES.md` — example SQL/commands for each [CRIT] item
 - Section K: add "Tool" column with example verification tools
