@@ -2,15 +2,15 @@
 
 **A practical audit checklist for LLM-based systems with persistent memory.**
 
-[![Version](https://img.shields.io/badge/version-1.2-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.3-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
-[![Items](https://img.shields.io/badge/checklist-80_items-orange.svg)]()
+[![Items](https://img.shields.io/badge/checklist-81_items-orange.svg)]()
 
 ---
 
 ## What Is This?
 
-An 80-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
+An 81-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
 
 Covers the full memory loop: ingestion → storage → retrieval → context assembly → model → output → feedback.
 
