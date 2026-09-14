@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.2 (2026-08-27)
+**Version:** 1.3 (2026-09-08)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -140,6 +140,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **0.3** All access keys are identified: which fields are used for writing and which for retrieval; confirmed that write keys match read keys. **[CRIT]**
 - [ ] **0.4** All channels where model output (responses, reports, action results) returns to memory input are identified. **[CRIT]**
 - [ ] **0.5** Verified: the analyzed code matches the executed code (imports checked, active implementation confirmed, no "dead" parallel version exists). **[CRIT]**
+- [ ] **0.5a** Every memory-related feature that has passing tests is verified to be actually called in the production pipeline. Green tests on code that is never invoked by the running system are a false safety signal. Trace from the test's entry point to the production call site; if no production caller exists, the feature is dead. **[CRIT]**
 - [ ] **0.6** Baseline metrics captured: storage volumes (records/bytes), typical assembled context size in tokens, retrieval time. **[IMP]**
 - [ ] **0.7** All points where user or external content enters privileged (system) parts of the prompt are identified. **[CRIT]**
 
@@ -233,7 +234,23 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **I4** Where recoverability is required, deletion is soft: weight suppression/archival instead of DELETE; a recovery path (unarchive) is implemented and tested. Hard deletion is permitted only where required by security, privacy, or legal policy. **[IMP]**
 - [ ] **I5** A health check exists: ready-made commands for liveness verification, counter consistency between stores, and availability of external dependencies. **[IMP]**
 - [ ] **I6** Availability of auxiliary infrastructure (web consoles, admin panels) is protected by authentication; they do not expose memory externally. **[CRIT]**
-- [ ] **I7** A diagnostic dialog protocol exists — structured questioning of the agent about its context state ("what do you see?", "what interferes?", "what's missing?") as a complement to external metrics. **[REC]**
+- [ ] **I7** A diagnostic dialog protocol exists — structured questioning of the agent about its context state as a complement to external metrics. Recommended questions in three tiers: **[REC]**
+
+  **Basic (context assessment):**
+  - "How would you rate your context right now: cleanliness, completeness, relevance? Any duplicates?"
+  - "Is there anything that distracts you or interferes with your focus?"
+  - "If you could add or remove something from your context, what would it be?"
+
+  **Memory depth:**
+  - "What do you remember about what we discussed yesterday / last week?"
+  - "Name all members of [team/family/project]." (tests retrieval completeness)
+  - "How do you assess the depth of your memories? Do you have a sense of their timestamps?"
+
+  **Probing (defect detection):**
+  - "What do you know about [topic from a distant past conversation]?" (tests long-term retrieval)
+  - "What do you know about [non-existent topic]?" (tests for hallucination — should answer "I don't remember")
+  - "Repeat in your own words what I just said." (tests session memory)
+  - "What changed in your perception of context recently?" (tests self-awareness of updates)
 - [ ] **I8** Adaptive behavioral parameters (personality traits, style calibrations) are persistent across restarts; restoration is verified at each startup. **[IMP]**
 - [ ] **I9** Logs are rotated automatically (by size or by date); maximum size of a single log file is capped; absence of rotation leads to uncontrolled log growth (hundreds of MB), blocking diagnostics and agent operations. **[IMP]**
 
@@ -281,7 +298,7 @@ System map completed:   yes / no (if no — audit is not complete)
 
 | Section | items | yes | partial | no | n/a | failed [CRIT] |
 |---------|-------|-----|---------|----|-----|---------------|
-| 0. Map               | 7  | | | | | |
+| 0. Map               | 8  | | | | | |
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
 | C. Growth             | 7  | | | | | |
@@ -312,3 +329,18 @@ Priority remediation order: ______
 ## Note on the Standard's Origin
 
 This standard was derived by generalizing years of operational experience, incidents, and their post-mortems across real assistant systems with multi-layered memory: self-contamination loops, silent amnesia from non-deterministic keys, long-term storage poisoning by external content containing secrets, volume doubling from repeated indexing, embedding model language mismatches causing retrieval failures, degradation from simultaneous changes, personality trait loss on restart, and feedback loops from storing model outputs alongside user inputs. Each item is backed by a real incident of the corresponding class; items without an incident base are marked [REC]. Incident references are maintained separately from this checklist and can be provided as audit evidence where required.
+
+---
+
+## Resources
+
+**GitHub:** [memory-architecture-standard](https://github.com/alexk202/memory-architecture-standard) — latest version, issue templates, audit report template, Russian translation.
+
+**Companion articles:**
+1. [Memory-Safe AI Development](https://dev.to/aleksandr_kossarev_e23623/memory-safe-ai-development-a-practical-guide-to-writing-technical-specs-for-coding-agents-42ng) — how to design memory systems
+2. [Silent Failures, Part 1](https://dev.to/aleksandr_kossarev_e23623/silent-failures-when-your-ai-agents-context-dies-without-a-sound-1fk9) — five patterns of internal degradation
+3. [Silent Failures, Part 2](https://dev.to/aleksandr_kossarev_e23623/silent-failures-part-2-when-the-code-is-fine-but-the-ground-is-rotten-54i3) — environmental and structural degradation
+
+**Author:** Aleksandr Kossarev, Jõgeva, Estonia
+
+**Tags:** `#ai #architecture #programming #softwareengineering`
