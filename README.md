@@ -54,7 +54,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 
 | Section | Focus | Items |
 |---------|-------|-------|
-| **0. System Map** | Preparation: identify all stores, paths, keys | 7 |
+| **0. System Map** | Preparation: identify all stores, paths, keys | 8 |
 | **A. Input Validation** | What enters memory — and what shouldn't | 7 |
 | **B. Write Integrity** | Idempotency, deduplication, transactions | 6 |
 | **C. Growth Management** | Limits, retention, cache invalidation | 7 |
