@@ -66,7 +66,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 | **I. Observability** | Monitoring, recovery, diagnostics | 9 |
 | **J. Change Management** | One change at a time, rollback, baselines | 6 |
 | **K. Quick Diagnostics** | Symptom → probable defect mapping | — |
-| | **Total** | **80** |
+| | **Total** | **81** |
 
 ## Criticality Levels
 
