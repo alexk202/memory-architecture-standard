@@ -10,7 +10,7 @@
 
 ## What Is This?
 
-An 81-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
+An 82-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
 
 Covers the full memory loop: ingestion → storage → retrieval → context assembly → model → output → feedback.
 
@@ -58,7 +58,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 | **A. Input Validation** | What enters memory — and what shouldn't | 7 |
 | **B. Write Integrity** | Idempotency, deduplication, transactions | 6 |
 | **C. Growth Management** | Limits, retention, cache invalidation | 7 |
-| **D. Retrieval** | Ranking, gating, embedding compatibility | 8 |
+| **D. Retrieval** | Ranking, gating, embedding compatibility | 9 |
 | **E. Context Assembly** | Summarization, budgets, position awareness | 11 |
 | **F. Feedback Loop** | Anti-recursion, echo prevention | 6 |
 | **G. Isolation** | Trust boundaries, domain separation | 7 |
@@ -66,7 +66,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 | **I. Observability** | Monitoring, recovery, diagnostics | 9 |
 | **J. Change Management** | One change at a time, rollback, baselines | 6 |
 | **K. Quick Diagnostics** | Symptom → probable defect mapping | — |
-| | **Total** | **81** |
+| | **Total** | **82** |
 
 ## Criticality Levels
 
