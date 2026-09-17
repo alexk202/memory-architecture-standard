@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.2
+**Standard version:** MAQS v1.3
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Auditor:** [Name / Agent]
@@ -17,6 +17,7 @@
 - [ ] P5: Existing tests triaged
 - [ ] P6: Test isolation confirmed
 - [ ] P7: Log sizes checked
+- [ ] P8: Runtime environment recorded (uptime, last OS/package updates)
 
 ## Baseline Metrics
 
@@ -33,11 +34,11 @@
 
 | Section | Items | Yes | Partial | No | N/A | Failed [CRIT] |
 |---------|-------|-----|---------|----|-----|----------------|
-| 0. System Map | 7 | | | | | |
+| 0. System Map | 8 | | | | | |
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
 | C. Growth Management | 7 | | | | | |
-| D. Retrieval | 8 | | | | | |
+| D. Retrieval | 9 | | | | | |
 | E. Context Assembly | 11 | | | | | |
 | F. Feedback Loop | 6 | | | | | |
 | G. Isolation | 7 | | | | | |
@@ -81,4 +82,4 @@
 
 ---
 
-*Generated using MAQS v1.2 Audit Report Template*
+*Generated using MAQS v1.3 Audit Report Template*

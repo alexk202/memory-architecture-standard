@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.3-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
-[![Items](https://img.shields.io/badge/checklist-81_items-orange.svg)]()
+[![Items](https://img.shields.io/badge/checklist-82_items-orange.svg)]()
 
 ---
 
@@ -14,7 +14,7 @@ An 82-item audit checklist for any LLM-based assistant or agent that accumulates
 
 Covers the full memory loop: ingestion → storage → retrieval → context assembly → model → output → feedback.
 
-**Every item is backed by a real production incident.** This is not theory — it's distilled operational experience from running 11 AI assistants with multi-layered memory architectures over multiple years.
+**Every item is backed by a real production incident.** This is not theory — it's distilled operational experience from running 12+ AI assistants with multi-layered memory architectures over multiple years.
 
 ## Who Is This For?
 
@@ -49,6 +49,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 3. Work through sections A–K, marking each item: `yes` / `partial` / `no` / `n/a`
 4. For each failure, record evidence (file, line, SQL query, log entry)
 5. Use the **Verdict Protocol** at the end to assess pass/fail
+6. Record the results in the [audit report template](examples/AUDIT_REPORT_TEMPLATE.md) — see also a [completed real-world audit report](examples/AUDIT_REPORT_2026-09-01_klodik.md)
 
 ## The Standard at a Glance
 
@@ -106,14 +107,14 @@ This standard was developed alongside a series of practical articles:
 
 ## Origin
 
-Derived from multi-year operational experience with 11 deployed AI assistants across different architectures (Llama, Gemini, Claude, DeepSeek, Mistral, GPT-4o, Qwen). Each checklist item traces to a real incident: self-contamination loops, silent amnesia, storage poisoning, embedding mismatches, feedback loops, personality loss on restart, and more.
+Derived from multi-year operational experience with 12+ deployed AI assistants across different architectures (Llama, Gemini, Claude, DeepSeek, Mistral, GPT-4o, Qwen). Each checklist item traces to a real incident: self-contamination loops, silent amnesia, storage poisoning, embedding mismatches, feedback loops, personality loss on restart, and more.
 
-Incident references are maintained separately and can be provided as audit evidence.
+Anonymized incident descriptions are published in the companion articles above (Silent Failures, Parts 1–2); the full incident-to-item mapping is maintained by the author and available as audit evidence.
 
 ## Languages
 
 - [English](STANDARD.md)
-- [Русский](translations/STANDARD_RU.md)
+- [Russian](translations/STANDARD_RU.md)
 
 ## FAQ
 
@@ -151,6 +152,7 @@ You are free to share, adapt, and build upon this standard — even commercially
 **Aleksandr Kossarev** — Jõgeva, Estonia
 
 - Dev.to: [@aleksandr_kossarev_e23623](https://dev.to/aleksandr_kossarev_e23623)
+- GitHub: [@alexk202](https://github.com/alexk202)
 - Project: [Arche Iscrin](https://archiscrin.bandcamp.com)
 
 ---

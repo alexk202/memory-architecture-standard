@@ -56,3 +56,4 @@ Be constructive. Every contribution makes AI memory systems safer for everyone.
 - Minor additions (new items, translations): increment patch (1.2 → 1.3)
 - Structural changes (new sections, item renumbering): increment minor (1.x → 2.0)
 - Version changes require agreement from the maintainer
+- When adding or changing checklist items, update the item count everywhere it appears: the README badge and intro line, the sections table in README (per-section counts and Total), and the Audit Result Protocol tables in `STANDARD.md` and `translations/STANDARD_RU.md`

@@ -12,6 +12,22 @@ All notable changes to the Memory Architecture Quality Standard.
 - `standard.json` / `standard.yaml` — machine-readable version
 - CLI tool `maqs audit` — automated checking of verifiable items
 
+## [1.3] - 2026-09-15
+
+### Added
+- **Glossary** — 9 core terms (Store, Provenance, Feedback contamination, Alive memory, Blind truncation, Bare call, Decay, Bridge, Guardian)
+- **Section 1** — Loop → Sections mapping table
+- **P8** — Runtime environment awareness: environment issues are not counted against the standard
+- **0.5a** — Dead-code detection: green tests on code never invoked in production are a false safety signal [CRIT]
+- **D9** — Conceptual gating of external results: keyword match without conceptual relevance is excluded [IMP]
+- **I7** — Expanded to a 10-question diagnostic dialog protocol in three tiers
+- Section K problem descriptions made searchable; keywords block in README
+- FAQ in README; GitHub issue template
+
+### Changed
+- Checklist items: 80 → 82 (added 0.5a, D9)
+- README: version badge, sections table (0 = 8, D = 9, total 82)
+
 ## [1.2] - 2026-08-27
 
 ### Added
