@@ -5,12 +5,18 @@ All notable changes to the Memory Architecture Quality Standard.
 ## [Unreleased]
 *Ideas and candidates for next version — not yet implemented.*
 
+### Backlog
 - ~~D9: Retrieval precision measurement on golden set~~ → implemented as D9: Conceptual Gating of External Tools
 - G8: Forgetting cascade (GDPR right to be forgotten — coordinated deletion across all stores)
 - `docs/VERIFICATION_QUERIES.md` — example SQL/commands for each [CRIT] item
 - Section K: add "Tool" column with example verification tools
 - `standard.json` / `standard.yaml` — machine-readable version
 - CLI tool `maqs audit` — automated checking of verifiable items
+
+### Community feedback (Mnemoverse, 2026-09-17)
+- G1: Add negative fixtures — independently authenticated callers, wrong/omitted scope, read-only write attempt, access after revocation. Current wording proves filter presence, not boundary behavior.
+- A1/E6-E7: Distinguish "admitted" from "trusted" — a record that passes admission must remain evidence; retrieval and compression must not upgrade it into instructions. Add fixtures for forged markers and instructions that survive summarization.
+- Verification methodology: introduce negative fixtures concept — proving boundary behavior through attempted violations, not through filter existence.
 
 ## [1.3] - 2026-09-15
 
