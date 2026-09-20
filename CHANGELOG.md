@@ -23,12 +23,12 @@ All notable changes to the Memory Architecture Quality Standard.
 ### Internal feedback 2026-09-19
 - F/G cross-section: Authority laundering — a low-trust record must not inherit trust level by being summarized or cited alongside a high-trust record. Compression must preserve or downgrade trust level, never upgrade it through co-occurrence. (Feedback from personal AI assistant)
 
-### Incident: false-green tests (Local assistant audit, 2026-09-20)
+### Incident: false-green tests (found during internal self-audit, 2026-09-20)
 *42 async tests silently skipped, 63 warnings masking real defects, test artifacts in production directory.*
 - J3 expand: a test that is never executed (silent skip, async without runner) is treated as incomplete, same as a fix without a test
 - H5 expand: test isolation covers the assistant's filesystem, not only databases; production paths as test defaults are a violation; guard check "before/after" on live directories
 - I2 expand: warnings in test runs are not noise — a run accepted with warnings is a false-green signal; acceptance requires warnings: 0 or explicitly documented per-warning exceptions
-- I (new I10): Warning deduplication — same warning repeated N+ times per interval is aggregated; "success" status on skipped/unperformed work is a status lie (B5 class)
+- I (new I10): Warning deduplication — same warning repeated N+ times per interval is aggregated with counter; consequent status ambiguity ("success" on unperformed work) escalated to B5
 - Section K: add rows — "Warnings always existed, nobody reads them" → false green / W invariant; "async tests in unittest wrapper" → silent skip; "test files in assistant's live directory" → H5 filesystem gap
 - Audit protocol: add "Warnings: N (all with documented per-item exceptions)" to verdict table; W1/W2 failure = blocker
 
