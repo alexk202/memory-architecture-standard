@@ -14,11 +14,12 @@ All notable changes to the Memory Architecture Quality Standard.
 - CLI tool `maqs audit` — automated checking of verifiable items
 
 ### Community feedback (Edward Izgorodin, Mnemoverse, 2026-09-19)
+*Architecture-level review of isolation and context-assembly sections. Not a complete audit or endorsement of the standard.*
 - G1: Add negative fixtures — independently authenticated callers, wrong/omitted scope, read-only write attempt, access after revocation. Current wording proves filter presence, not boundary behavior.
 - A1/E6-E7: Distinguish "admitted" from "trusted" — a record that passes admission must remain evidence; retrieval and compression must not upgrade it into instructions. Add fixtures for forged markers and instructions that survive summarization.
 - Verification methodology: introduce negative fixtures concept — proving boundary behavior through attempted violations, not through filter existence.
 
-### 2026-09-19
+### Internal feedback 2026-09-19
 - F/G cross-section: Authority laundering — a low-trust record must not inherit trust level by being summarized or cited alongside a high-trust record. Compression must preserve or downgrade trust level, never upgrade it through co-occurrence. (Feedback from personal AI assistant)
 
 ## [1.3] - 2026-09-15
