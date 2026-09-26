@@ -6,31 +6,40 @@ All notable changes to the Memory Architecture Quality Standard.
 *Ideas and candidates for next version — not yet implemented.*
 
 ### Backlog
-- ~~D9: Retrieval precision measurement on golden set~~ → implemented as D9: Conceptual Gating of External Tools
 - G8: Forgetting cascade (GDPR right to be forgotten — coordinated deletion across all stores)
 - `docs/VERIFICATION_QUERIES.md` — example SQL/commands for each [CRIT] item
 - Section K: add "Tool" column with example verification tools
 - `standard.json` / `standard.yaml` — machine-readable version
 - CLI tool `maqs audit` — automated checking of verifiable items
 
-### Community feedback (Edward Izgorodin, Mnemoverse, 2026-09-19)
+## [1.4] - 2026-09-26
+
+### Added
+- **F7** Authority laundering prevention: compression must not upgrade trust level through co-occurrence [CRIT] (internal feedback)
+- **I10** Warning deduplication with counter; status ambiguity escalated as B5-class [IMP] (found during internal self-audit)
+- **Section K** — 3 new symptom rows: false-green warnings, async test silent skip, test files in live directory
+- **Audit protocol** — "Warnings" line added to verdict table
+
+### Changed (community feedback: Edward Izgorodin, Mnemoverse)
 *Architecture-level review of isolation and context-assembly sections. Not a complete audit or endorsement of the standard.*
-- G1: Add negative fixtures — independently authenticated callers, wrong/omitted scope, read-only write attempt, access after revocation. Current wording proves filter presence, not boundary behavior.
-- A1/E6-E7: Distinguish "admitted" from "trusted" — a record that passes admission must remain evidence; retrieval and compression must not upgrade it into instructions. Add fixtures for forged markers and instructions that survive summarization.
-- Verification methodology: introduce negative fixtures concept — proving boundary behavior through attempted violations, not through filter existence.
-- **Follow-up:** send revision link to Edward Izgorodin upon v1.4 publication (promised 2026-09-19)
+- **G1** expanded: negative fixtures required — independently authenticated callers, wrong/omitted scope, read-only write attempt, access after revocation. Proves boundary behavior, not filter presence.
+- **E6** expanded: "admitted ≠ trusted" — retrieval and compression must not upgrade evidence into instructions
 
-### Internal feedback 2026-09-19
-- F/G cross-section: Authority laundering — a low-trust record must not inherit trust level by being summarized or cited alongside a high-trust record. Compression must preserve or downgrade trust level, never upgrade it through co-occurrence. (Feedback from personal AI assistant)
+### Changed (found during internal self-audit)
+- **J3** expanded: unexecuted test (silent skip, async without runner) = incomplete, same as fix without test
+- **H5** expanded: isolation covers assistant's filesystem, not only databases; production paths as test defaults = violation
+- **I2** expanded: warnings = false-green signal; acceptance requires 0 warnings or documented per-warning exceptions
 
-### Incident: false-green tests (found during internal self-audit, 2026-09-20)
-*42 async tests silently skipped, 63 warnings masking real defects, test artifacts in production directory.*
-- J3 expand: a test that is never executed (silent skip, async without runner) is treated as incomplete, same as a fix without a test
-- H5 expand: test isolation covers the assistant's filesystem, not only databases; production paths as test defaults are a violation; guard check "before/after" on live directories
-- I2 expand: warnings in test runs are not noise — a run accepted with warnings is a false-green signal; acceptance requires warnings: 0 or explicitly documented per-warning exceptions
-- I (new I10): Warning deduplication — same warning repeated N+ times per interval is aggregated with counter; consequent status ambiguity ("success" on unperformed work) escalated to B5
-- Section K: add rows — "Warnings always existed, nobody reads them" → false green / W invariant; "async tests in unittest wrapper" → silent skip; "test files in assistant's live directory" → H5 filesystem gap
-- Audit protocol: add "Warnings: N (all with documented per-item exceptions)" to verdict table; W1/W2 failure = blocker
+### Changed (internal feedback)
+- **F2/F3** verification methodology: negative fixtures concept — proving boundary behavior through attempted violations
+
+### Removed from backlog
+- ~~D9: Retrieval precision measurement on golden set~~ → implemented in v1.3 as D9: Conceptual Gating
+
+### Notes
+- Checklist items: 82 → 84 (added F7, I10)
+- Protocol table updated: F=7, I=10
+- **Follow-up:** send revision link to Edward Izgorodin (Mnemoverse) — promised 2026-09-19 ✅
 
 ## [1.3] - 2026-09-15
 

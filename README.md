@@ -2,9 +2,9 @@
 
 **A practical audit checklist for LLM-based systems with persistent memory.**
 
-[![Version](https://img.shields.io/badge/version-1.3-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.4-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
-[![Items](https://img.shields.io/badge/checklist-82_items-orange.svg)]()
+[![Items](https://img.shields.io/badge/checklist-84_items-orange.svg)]()
 
 ---
 

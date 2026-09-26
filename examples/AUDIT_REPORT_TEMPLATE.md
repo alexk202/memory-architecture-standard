@@ -40,10 +40,10 @@
 | C. Growth Management | 7 | | | | | |
 | D. Retrieval | 9 | | | | | |
 | E. Context Assembly | 11 | | | | | |
-| F. Feedback Loop | 6 | | | | | |
+| F. Feedback Loop | 7 | | | | | |
 | G. Isolation | 7 | | | | | |
 | H. Concurrency | 6 | | | | | |
-| I. Observability | 9 | | | | | |
+| I. Observability | 10 | | | | | |
 | J. Change Management | 6 | | | | | |
 
 ## Critical Failures
@@ -65,6 +65,8 @@
 | | | |
 
 ## Verdict
+
+**Warnings:** ______ (all with documented per-item exceptions; 0 = clean)
 
 - [ ] **DOES NOT PASS** — [CRIT] failures: ___
 - [ ] **PASSES WITH CAVEATS** — [CRIT] clean, [IMP] failures: ___
