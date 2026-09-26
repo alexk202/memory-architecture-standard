@@ -5,12 +5,48 @@ All notable changes to the Memory Architecture Quality Standard.
 ## [Unreleased]
 *Ideas and candidates for next version — not yet implemented.*
 
+### Added
+- **E12** Artifact–Memory Separation: external artifacts must
+  remain distinguishable from memory and contextual
+  representations of their content. Event/research memory may
+  preserve why an artifact is being analyzed and which elements
+  require attention, but must not silently substitute,
+  reconstruct, or modify the current artifact representation.
+  When current artifact data conflicts with Content Memory or
+  prior expectations, the conflict must remain observable and
+  the current artifact must retain factual precedence. [IMP]
+- **P9** Controlled artifact experiment: when artifact–memory
+  contamination is suspected, prepare a new artifact of a
+  different type, verify syntax independently before delivery,
+  deliver without prior disclosure, and record the result. A
+  clean read constitutes acceptance of the delivery channel.
+  [REC]
+
+### Changed
+- **E4** clarified by E12: structured content must be preserved
+  not only against lossy compression, but also against
+  substitution by prior contextual or memory-derived
+  representations.
+- **I1** applies to artifact/context contamination: monitoring
+  should detect cases where prior memory appears in analysis of
+  a current artifact without being present in the artifact
+  itself.
+- **J3** extended: artifact-memory conflict cases should have
+  regression guard tests where applicable.
+
 ### Backlog
-- G8: Forgetting cascade (GDPR right to be forgotten — coordinated deletion across all stores)
-- `docs/VERIFICATION_QUERIES.md` — example SQL/commands for each [CRIT] item
+- G8: Forgetting cascade (GDPR right to be forgotten —
+  coordinated deletion across all stores)
+- `docs/VERIFICATION_QUERIES.md` — example SQL/commands for
+  each [CRIT] item
+- `docs/ARTIFACT_MEMORY_PIPELINE.md` — full research protocol
+  for artifact–memory separation experiments
 - Section K: add "Tool" column with example verification tools
 - `standard.json` / `standard.yaml` — machine-readable version
 - CLI tool `maqs audit` — automated checking of verifiable items
+- Section K symptom row (pending confirmation):
+  `Current artifact is valid, but agent reports remembered
+  structure → Artifact–Memory contamination → E12, I1`
 
 ## [1.4] - 2026-09-26
 
