@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.3
+**Standard version:** MAQS v1.4
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Auditor:** [Name / Agent]
@@ -64,6 +64,14 @@
 |------|--------------|----------------------|
 | | | |
 
+## Artifact–Memory Conflicts (optional)
+
+| Artifact | Memory Entry | Conflict Description | Resolution |
+|----------|-------------|---------------------|------------|
+| | | | |
+
+*List cases where the current artifact diverges from what the agent "remembers." An empty table is also a signal ("no conflicts found").*
+
 ## Verdict
 
 **Warnings:** ______ (all with documented per-item exceptions; 0 = clean)
@@ -84,4 +92,4 @@
 
 ---
 
-*Generated using MAQS v1.3 Audit Report Template*
+*Generated using MAQS v1.4 Audit Report Template*
