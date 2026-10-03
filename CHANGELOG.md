@@ -21,6 +21,12 @@ All notable changes to the Memory Architecture Quality Standard.
   deliver without prior disclosure, and record the result. A
   clean read constitutes acceptance of the delivery channel.
   [REC]
+- **P9-b** Decoy verification: artifact contains a plausible but
+  false element that memory would expect; any mention of absent
+  decoy in the report = proof of confabulation. Canary catches
+  "didn't read"; decoy catches "fabricated." Note: both tests are
+  one-sided — positive result is proof, negative is inconclusive.
+  Full coverage requires both. [REC] (internal feedback)
 - **P10** External auditor isolation: any automated or agent-driven
   audit must run from an environment that has no write-access to
   production stores and shares no runtime state (processes, caches,
@@ -68,8 +74,15 @@ All notable changes to the Memory Architecture Quality Standard.
 - CLI tool maqs audit — automated checking of verifiable items;
   --read-only / --external as the only permitted production mode
 - P9 refinement: canary elements — artifact must contain unique
-  data guaranteed absent from memory; clean canary read = proof
-  of artifact reading vs memory recall (internal feedback)
+  data guaranteed absent from memory; canary reproduced = proof
+  of reading; canary absent from report = inconclusive (not proof
+  of non-reading). One-sided test. (internal feedback)
+- P9-c: memory-echo probe — element that is true in memory but
+  absent from artifact; appearance in report = proof of memory
+  supplementation (E12 violation: addition is also modification).
+  Canary catches "didn't read"; decoy catches "fabricated";
+  echo catches "supplemented with truth." Three diseases, three
+  tests. (internal feedback)
 
 ## [1.4] - 2026-09-26
 
