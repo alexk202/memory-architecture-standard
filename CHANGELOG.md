@@ -73,16 +73,20 @@ All notable changes to the Memory Architecture Quality Standard.
 - standard.json / standard.yaml — machine-readable version
 - CLI tool maqs audit — automated checking of verifiable items;
   --read-only / --external as the only permitted production mode
-- P9 refinement: canary elements — artifact must contain unique
-  data guaranteed absent from memory; canary reproduced = proof
-  of reading; canary absent from report = inconclusive (not proof
-  of non-reading). One-sided test. (internal feedback)
-- P9-c: memory-echo probe — element that is true in memory but
-  absent from artifact; appearance in report = proof of memory
+- **P9-a** Canary probe: unique data embedded mid-body, absent
+  from all memory stores. Reproduced = proof of reading.
+  Absent from report = inconclusive. One-sided test.
+  (internal feedback)
+- **P9-c** Echo probe: memory-true element guaranteed absent
+  from artifact, thematically adjacent (tempting for
+  supplementation). Appearing in report = proof of memory
   supplementation (E12 violation: addition is also modification).
-  Canary catches "didn't read"; decoy catches "fabricated";
-  echo catches "supplemented with truth." Three diseases, three
-  tests. (internal feedback)
+  Absent = inconclusive. Echo must be tempting, or the test
+  yields uninformative clean results. (internal feedback)
+- **P9 package rule:** canary + decoy live IN the artifact,
+  echo lives in memory — one run tests all three diseases.
+  All probes are one-sided; combined grid gives diagnosis,
+  single probe gives only proof-or-silence. (internal feedback)
 
 ## [1.4] - 2026-09-26
 
