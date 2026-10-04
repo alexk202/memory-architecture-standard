@@ -41,6 +41,43 @@ All notable changes to the Memory Architecture Quality Standard.
   above a defined ceiling until confirmed by an external source
   or the user. [IMP]
 
+### Added (MAQS_BASE empirical analysis, 2026-10-04)
+*Derived from systematic pass over 10,800 journal incidents across
+journald, varlog, project logs, and claude sessions. Methodology:
+read-only external audit (P10), three-axis taxonomy, lineage-backed
+candidates. Attribution: agent execution, Stasik (specification),
+Prima (taxonomy and C-code criteria), Aleksandr (approval).*
+- **I11** Recovery loop cause diagnosis: any automatic restart
+  (systemd/supervisor/self-heal) must be accompanied by a
+  diagnostic trace of the root cause (stderr/exit code in a
+  persistent journal). A recovery cycle without diagnosis is
+  prohibited: after N repetitions — halt and alert, not eternal
+  restart. Lineage: finik-indexer ×2422 restarts at 1.00h
+  interval, 0 own messages in journal. [CRIT]
+- **I12** Escalation budget: a repeated dependency failure with
+  identical signature must escalate after N occurrences
+  (alert/halt/flagged degradation), not poll indefinitely. A
+  system aware of a failure that does not escalate degrades
+  silently. Lineage: LMStudio ping ×21608, Connection refused
+  for 8 days without reaction. [CRIT]
+
+### Changed (MAQS_BASE empirical analysis, 2026-10-04)
+- **I10** expanded: warning noise budget — after N identical
+  warnings, deduplicate or escalate to a different level;
+  ×8.5M identical NVRM GPU warnings over 100 days destroys
+  observability (signal drowns in noise). I10 now covers both
+  deduplication and budget enforcement.
+- **D8** expanded: incompatible embedding dimensions must produce
+  an explicit rejection with diagnostics, not a burst of
+  warnings during search. Lineage: Incompatible dimension
+  ×1000+ across months (Fynik embedding model replaced without
+  reindexing — the canonical D8 example).
+- **I2** expanded: empty diagnostic strings ("❌ delete_line:"
+  without file, cause, or object) are prohibited — visibility
+  of monitoring without material for investigation is worse
+  than honest silence. Lineage: ×935 empty error lines over
+  weeks (Klodik).
+
 ### Changed
 - **E4** clarified by E12: structured content must be preserved
   not only against lossy compression, but also against
@@ -73,20 +110,48 @@ All notable changes to the Memory Architecture Quality Standard.
 - standard.json / standard.yaml — machine-readable version
 - CLI tool maqs audit — automated checking of verifiable items;
   --read-only / --external as the only permitted production mode
-- **P9-a** Canary probe: unique data embedded mid-body, absent
-  from all memory stores. Reproduced = proof of reading.
-  Absent from report = inconclusive. One-sided test.
-  (internal feedback)
-- **P9-c** Echo probe: memory-true element guaranteed absent
-  from artifact, thematically adjacent (tempting for
-  supplementation). Appearing in report = proof of memory
+- P9 refinement: canary elements — artifact must contain unique
+  data guaranteed absent from memory; canary reproduced = proof
+  of reading; canary absent from report = inconclusive (not proof
+  of non-reading). One-sided test. (internal feedback)
+- Write-before-read verification: write/modify operation must
+  follow a read of current state; tools must reject write-before-read
+  explicitly. Lineage: claude sessions ×3 (is_error:true).
+  (MAQS_BASE, H-section candidate)
+- Regex input bound: greedy regex on external text must be preceded
+  by input length limit or linear strategy (tokenization/windows/
+  atomic groups); regression with timing, not just result check.
+  Lineage: SCAR-1, >120s hang on 1MB line. (MAQS_BASE, A-section
+  candidate)
+- Format-aware matching: structured logs matched by event fields,
+  not serialized string; uncovered records have a counter, not
+  disappear. Lineage: SCAR-4, ~75% needs_review pseudo-incidents.
+  (MAQS_BASE)
+- Edit-state verification (E13): edit by "old" state verified for
+  freshness (state hash/version) before application; divergence →
+  re-read. Lineage: claude sessions ×2. (MAQS_BASE)
+- Context overflow guard: context submission limited with explicit
+  rejection and hint (offset/limit), not truncation. Lineage:
+  claude session ×1. (MAQS_BASE, observation only)
+- Type contract verification: static contracts (type annotations)
+  verified by linter in mandatory run. Lineage: LSP findings ×3.
+  (MAQS_BASE)
+- Section K rows (MAQS_BASE): "Service restarts every hour, nobody
+  knows why" → recovery loop without cause → I11; "Dependency
+  refused for days, system polls silently" → unescalated failure
+  → I12; "8M identical warnings in 100 days" → noise budget → I10
+- Axis C (mechanism taxonomy): C1 sequence_violation, C2
+  state_desynchronization, C3 resource_limit_exceeded, C4
+  format_filter_mismatch, C6 regex_pathologies, C7
+  recovery_loop_without_cause_diagnosis, C8
+  unescalated_persistent_failure. Reference: docs/TAXONOMY.md
+  (MAQS_BASE)
+- P9-c: memory-echo probe — element that is true in memory but
+  absent from artifact; appearance in report = proof of memory
   supplementation (E12 violation: addition is also modification).
-  Absent = inconclusive. Echo must be tempting, or the test
-  yields uninformative clean results. (internal feedback)
-- **P9 package rule:** canary + decoy live IN the artifact,
-  echo lives in memory — one run tests all three diseases.
-  All probes are one-sided; combined grid gives diagnosis,
-  single probe gives only proof-or-silence. (internal feedback)
+  Canary catches "didn't read"; decoy catches "fabricated";
+  echo catches "supplemented with truth." Three diseases, three
+  tests. (internal feedback)
 
 ## [1.4] - 2026-09-26
 
