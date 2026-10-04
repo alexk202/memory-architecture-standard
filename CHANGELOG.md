@@ -45,14 +45,14 @@ All notable changes to the Memory Architecture Quality Standard.
 *Derived from systematic pass over 10,800 journal incidents across
 journald, varlog, project logs, and claude sessions. Methodology:
 read-only external audit (P10), three-axis taxonomy, lineage-backed
-candidates. Attribution: agent execution, Stasik (specification),
-Prima (taxonomy and C-code criteria), Aleksandr (approval).*
+candidates. Attribution: agent execution with internal review
+and approval by the project owner.*
 - **I11** Recovery loop cause diagnosis: any automatic restart
   (systemd/supervisor/self-heal) must be accompanied by a
   diagnostic trace of the root cause (stderr/exit code in a
   persistent journal). A recovery cycle without diagnosis is
   prohibited: after N repetitions — halt and alert, not eternal
-  restart. Lineage: finik-indexer ×2422 restarts at 1.00h
+  restart. Lineage: indexer service ×2422 restarts at 1.00h
   interval, 0 own messages in journal. [CRIT]
 - **I12** Escalation budget: a repeated dependency failure with
   identical signature must escalate after N occurrences
@@ -70,13 +70,13 @@ Prima (taxonomy and C-code criteria), Aleksandr (approval).*
 - **D8** expanded: incompatible embedding dimensions must produce
   an explicit rejection with diagnostics, not a burst of
   warnings during search. Lineage: Incompatible dimension
-  ×1000+ across months (Fynik embedding model replaced without
+  ×1000+ across months (embedding model replaced without
   reindexing — the canonical D8 example).
 - **I2** expanded: empty diagnostic strings ("❌ delete_line:"
   without file, cause, or object) are prohibited — visibility
   of monitoring without material for investigation is worse
   than honest silence. Lineage: ×935 empty error lines over
-  weeks (Klodik).
+  weeks (local assistant).
 
 ### Changed
 - **E4** clarified by E12: structured content must be preserved
