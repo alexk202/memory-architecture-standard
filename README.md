@@ -130,6 +130,19 @@ A: Unit tests verify code correctness. This standard verifies memory integrity. 
 **Q: Is this compatible with OWASP LLM Top 10?**
 A: They are complementary, not competing. OWASP covers security threats (prompt injection, data poisoning). MAQS covers memory quality (recursion, degradation, context integrity). A robust system needs both.
 
+## Related Work
+
+MAQS operates in a rapidly growing research space. Key 2026 publications that address overlapping concerns:
+
+- **"Silent Failure in LLM Agent Systems: The Entropy Principle"** (Liu, 2026) — taxonomy of 22 intrinsic properties across six lifecycle layers, including memory persistence. [arxiv.org/html/2606.08162v1](https://arxiv.org/html/2606.08162v1)
+- **"When Errors Become Narratives"** (2026) — longitudinal study of silent failures in a production LLM agent runtime; 70% of failures caught by human observation, not tests. [arxiv.org/pdf/2606.14589](https://arxiv.org/pdf/2606.14589)
+- **"Memory as Infrastructure"** (Helwig, 2026) — months-scale instrumented record of persistent agent memory in production; introduces "silent memory death." [arxiv.org/pdf/2609.05510](https://arxiv.org/pdf/2609.05510)
+- **"Memory as Metabolism"** (2026) — governance framework for user-coupled drift in personal LLM memory systems. [arxiv.org/pdf/2604.12034](https://arxiv.org/pdf/2604.12034)
+- **"Mnemonic Sovereignty"** (2026) — survey on security of long-term LLM agent memory; notes that benign-persistence failures remain sparsely studied. [arxiv.org/html/2604.16548v1](https://arxiv.org/html/2604.16548v1)
+- **"Memory for Autonomous LLM Agents"** (2026) — survey of mechanisms and evaluation; documents summarization drift and silent paging failures. [arxiv.org/html/2603.07670v1](https://arxiv.org/html/2603.07670v1)
+
+These works taxonomize and study memory failures. MAQS provides the actionable audit checklist to detect them before they drift.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
