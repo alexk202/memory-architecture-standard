@@ -7,6 +7,33 @@ All notable changes to the Memory Architecture Quality Standard.
 ## [Unreleased]
 *Ideas and candidates for next version — not yet implemented.*
 
+### Backlog
+- G8: Forgetting cascade (GDPR right to be forgotten —
+  coordinated deletion across all stores)
+- docs/VERIFICATION_QUERIES.md — example SQL/commands for
+  each [CRIT] item; expand with filesystem and process checks
+  (log sizes, orphaned index files, mtime divergence between
+  related stores), not only SQL
+- docs/ARTIFACT_MEMORY_PIPELINE.md — full research protocol
+  for artifact-memory separation experiments
+- docs/CONTEXT_PROVENANCE.md — provenance labels
+  (artifact_now / memory / model_output) in assembled context;
+  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
+  (feedback from personal AI assistant)
+- Section K: add "Tool" column with example verification tools
+- standard.json / standard.yaml — machine-readable version
+- CLI tool maqs audit — automated checking of verifiable items;
+  --read-only / --external as the only permitted production mode
+- Write-before-read verification (MAQS_BASE, H-section candidate)
+- Regex input bound (MAQS_BASE, A-section candidate)
+- Format-aware matching (MAQS_BASE)
+- Edit-state verification E13 (MAQS_BASE)
+- Context overflow guard (MAQS_BASE, observation only)
+- Type contract verification (MAQS_BASE)
+- Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
+
+## [1.5] - 2026-10-05
+
 ### Added
 - **E12** Artifact–Memory Separation: external artifacts must
   remain distinguishable from memory and contextual
@@ -97,59 +124,13 @@ and approval by the project owner.*
 - **J3** extended: artifact-memory conflict cases should have
   regression guard tests where applicable.
 
-### Backlog
-- G8: Forgetting cascade (GDPR right to be forgotten —
-  coordinated deletion across all stores)
-- docs/VERIFICATION_QUERIES.md — example SQL/commands for
-  each [CRIT] item; expand with filesystem and process checks
-  (log sizes, orphaned index files, mtime divergence between
-  related stores), not only SQL
-- docs/ARTIFACT_MEMORY_PIPELINE.md — full research protocol
-  for artifact-memory separation experiments
-- docs/CONTEXT_PROVENANCE.md — provenance labels
-  (artifact_now / memory / model_output) in assembled context;
-  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
-  (feedback from personal AI assistant)
-- Section K: add "Tool" column with example verification tools
-- Section K symptom row (pending confirmation):
-  Current artifact is valid, but agent reports remembered
-  structure → Artifact-Memory contamination → E12, I1
-- standard.json / standard.yaml — machine-readable version
-- CLI tool maqs audit — automated checking of verifiable items;
-  --read-only / --external as the only permitted production mode
-- Write-before-read verification: write/modify operation must
-  follow a read of current state; tools must reject write-before-read
-  explicitly. Lineage: claude sessions ×3 (is_error:true).
-  (MAQS_BASE, H-section candidate)
-- Regex input bound: greedy regex on external text must be preceded
-  by input length limit or linear strategy (tokenization/windows/
-  atomic groups); regression with timing, not just result check.
-  Lineage: SCAR-1, >120s hang on 1MB line. (MAQS_BASE, A-section
-  candidate)
-- Format-aware matching: structured logs matched by event fields,
-  not serialized string; uncovered records have a counter, not
-  disappear. Lineage: SCAR-4, ~75% needs_review pseudo-incidents.
-  (MAQS_BASE)
-- Edit-state verification (E13): edit by "old" state verified for
-  freshness (state hash/version) before application; divergence →
-  re-read. Lineage: claude sessions ×2. (MAQS_BASE)
-- Context overflow guard: context submission limited with explicit
-  rejection and hint (offset/limit), not truncation. Lineage:
-  claude session ×1. (MAQS_BASE, observation only)
-- Type contract verification: static contracts (type annotations)
-  verified by linter in mandatory run. Lineage: LSP findings ×3.
-  (MAQS_BASE)
-- Section K rows (MAQS_BASE): "Service restarts every hour, nobody
-  knows why" → recovery loop without cause → I11; "Dependency
-  refused for days, system polls silently" → unescalated failure
-  → I12; "8M identical warnings in 100 days" → noise budget → I10
-- Axis C (mechanism taxonomy): C1 sequence_violation, C2
-  state_desynchronization, C3 resource_limit_exceeded, C4
-  format_filter_mismatch, C6 regex_pathologies, C7
-  recovery_loop_without_cause_diagnosis, C8
-  unescalated_persistent_failure. Reference: docs/TAXONOMY.md
-  (MAQS_BASE)
-
+### Notes
+- Checklist items: 84 → 89 (added 0.6a, E12, F8, I11, I12)
+- Protocol table updated: 0=9, E=12, F=8, I=12
+- Preparation phase: P1–P8 → P1–P10 (added P9 diagnostic triad, P10 external auditor isolation)
+- K table: +3 symptom rows (recovery loop, unescalated failure, noise budget)
+- MAQS_BASE empirical analysis: 10,800 journal incidents processed
+- Edward Izgorodin (Mnemoverse) credited for negative fixtures concept (v1.4)
 
 ## [1.4] - 2026-09-26
 

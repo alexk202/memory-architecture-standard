@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.4
+**Standard version:** MAQS v1.5
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Auditor:** [Name / Agent]
@@ -34,16 +34,16 @@
 
 | Section | Items | Yes | Partial | No | N/A | Failed [CRIT] |
 |---------|-------|-----|---------|----|-----|----------------|
-| 0. System Map | 8 | | | | | |
+| 0. System Map | 9 | | | | | |
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
 | C. Growth Management | 7 | | | | | |
 | D. Retrieval | 9 | | | | | |
-| E. Context Assembly | 11 | | | | | |
-| F. Feedback Loop | 7 | | | | | |
+| E. Context Assembly | 12 | | | | | |
+| F. Feedback Loop | 8 | | | | | |
 | G. Isolation | 7 | | | | | |
 | H. Concurrency | 6 | | | | | |
-| I. Observability | 10 | | | | | |
+| I. Observability | 12 | | | | | |
 | J. Change Management | 6 | | | | | |
 
 ## Critical Failures
@@ -92,4 +92,4 @@
 
 ---
 
-*Generated using MAQS v1.4 Audit Report Template*
+*Generated using MAQS v1.5 Audit Report Template*

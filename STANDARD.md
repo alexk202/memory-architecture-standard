@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.4 (2026-09-26)
+**Version:** 1.5 (2026-10-05)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -85,7 +85,19 @@ Before starting the audit, check the size of all log files. Uncontrolled log gro
 **Step P8. Runtime environment awareness.**
 Record the system uptime and the date of last OS/package updates before starting the audit. Accumulated runtime state (process caches, updated but not reloaded libraries, stale compiled bytecode) can mask or mimic memory defects. If a defect disappears after a system restart, it is a runtime environment issue, not a memory architecture defect — document it separately and do not count it against the standard.
 
-Only after completing steps P1–P8 can the section-by-section audit begin.
+**Step P9. Controlled artifact experiment** (when artifact–memory contamination is suspected):
+Prepare a new artifact of a different type, verify syntax independently before delivery, deliver without prior disclosure, and record the result. A clean read constitutes acceptance of the delivery channel.
+
+**P9 diagnostic triad** (P9-a / P9-b / P9-c): all three probes are one-sided — a positive result is proof, a negative result is inconclusive. Combined grid gives diagnosis; single probe gives only proof-or-silence. See `docs/P9_DIAGNOSTIC_GRID.md`.
+
+- **P9-a** Canary probe: unique data embedded mid-body, absent from all memory stores. Reproduced in report = proof of reading. Absent = inconclusive.
+- **P9-b** Decoy verification: plausible but false element that memory would expect; any mention = proof of confabulation.
+- **P9-c** Echo probe: memory-true element absent from artifact, thematically tempting. Appearing = proof of supplementation (E12 violation). Absent = inconclusive.
+
+**Step P10. External auditor isolation.**
+Any automated or agent-driven audit must run from an environment that has no write-access to production stores and shares no runtime state (processes, caches, loaded embedding models) with the audited system. Audit results are written only to an external report.
+
+Only after completing steps P1–P10 can the section-by-section audit begin.
 
 ### 2.2. Conducting the Audit
 
@@ -142,6 +154,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **0.5** Verified: the analyzed code matches the executed code (imports checked, active implementation confirmed, no "dead" parallel version exists). **[CRIT]**
 - [ ] **0.5a** Every memory-related feature that has passing tests is verified to be actually called in the production pipeline. Green tests on code that is never invoked by the running system are a false safety signal. Trace from the test's entry point to the production call site; if no production caller exists, the feature is dead. **[CRIT]**
 - [ ] **0.6** Baseline metrics captured: storage volumes (records/bytes), typical assembled context size in tokens, retrieval time. **[IMP]**
+- [ ] **0.6a** For each store and for the assembled context, a local baseline is recorded (volume, typical context size, % model-generated content). Anomalies are defined relative to the system's own baseline, not universal numbers. **[IMP]**
 - [ ] **0.7** All points where user or external content enters privileged (system) parts of the prompt are identified. **[CRIT]**
 
 ## Section A. Input Validation (INGESTION)
@@ -182,7 +195,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **D5** Retrieval is deterministic across restarts: keys are persistent; non-deterministic hashes/identifiers are not used as access keys. **[CRIT]**
 - [ ] **D6** Thresholds, limits, and retrieval weights are externalized to configuration, not hardcoded as magic numbers. **[REC]**
 - [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. **[CRIT]**
-- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. **[CRIT]**
+- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. **[CRIT]**
 - [ ] **D9** Results from external sources (web search, file read, RAG) are filtered against the active semantic context of the current session before entering context assembly. A keyword match with zero conceptual relevance to the current dialog is marked as low-relevance or excluded. Without this filter, a query for "Apple" during a programming discussion may return a pie recipe instead of a framework reference. **[IMP]**
 
 ## Section E. Context Assembly (ASSEMBLY)
@@ -190,7 +203,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **E1** Blind truncation of semantically meaningful content is prohibited: any shortening is semantic summarization; mid-sentence fragments do not enter the prompt. Dropping entire lowest-priority blocks within a defined token budget is not blind truncation. **[CRIT]**
 - [ ] **E2** The full original is stored separately from the compressed representation (two-phase storage: original in history, compression in context). **[CRIT]**
 - [ ] **E3** The compressed representation cache is invalidated on change, restoration, or re-evaluation of sources; TTL is defined. **[IMP]**
-- [ ] **E4** Structured blocks (code, tables) must not be compressed in a way that destroys their semantics; they are preserved in full or represented through a lossless/validated alternative. **[IMP]**
+- [ ] **E4** Structured blocks (code, tables) must not be compressed in a way that destroys their semantics; they are preserved in full or represented through a lossless/validated alternative. Structured content must also be protected against substitution by prior contextual or memory-derived representations. **[IMP]**
 - [ ] **E5** Budgets are defined for each injected block (characters/tokens), including tool results and memories. **[IMP]**
 - [ ] **E6** User input does not enter privileged prompt blocks (priorities, system sections, memory headers) without strict validation of all fields. Passing an admission filter does not upgrade a record into trusted instructions — a record must remain evidence through retrieval and compression, never gaining authority through co-location with trusted content. **[CRIT]**
 - [ ] **E7** Trusted markers (system prefixes, tool markers, memory source labels) cannot be imitated by user text — input is filtered for their formats. **[CRIT]**
@@ -198,6 +211,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **E9** Commands/actions extracted from model response text (file operations, search, memory calls) are validated: paths, permissions, confirmations, limits. **[CRIT]**
 - [ ] **E10** A mechanism exists for protecting emotionally significant records from summarization and decay (protected/alive memory); the maximum number of protected records is capped. **[REC]**
 - [ ] **E11** Critical information is placed at the beginning and end of the context window, not in the middle; for long contexts, especially where positional attention degradation has been observed, this placement is verified (ref: Liu et al., "Lost in the Middle," 2023). **[IMP]**
+- [ ] **E12** Artifact–Memory Separation: external artifacts must remain distinguishable from memory and contextual representations of their content. Memory may preserve why an artifact is being analyzed and which elements require attention, but must not silently substitute, reconstruct, or modify the current artifact representation. When current artifact data conflicts with memory or prior expectations, the conflict must remain observable and the current artifact must retain factual precedence. **[IMP]**
 
 ## Section F. Feedback Loop (FEEDBACK LOOP)
 
@@ -208,6 +222,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **F5** Memory recall results inserted into response text do not "leak" back into long-term memory without a filter. **[CRIT]**
 - [ ] **F6** The path "input error → distorted response → writing distortion to memory" is broken: context assembly errors are not masked as valid content. **[CRIT]**
 - [ ] **F7** Authority laundering is prevented: a low-trust record must not inherit trust level by being summarized or cited alongside a high-trust record. Compression must preserve or downgrade trust level, never upgrade it through co-occurrence. **[CRIT]**
+- [ ] **F8** Model-output importance ceiling: records with provenance source=model_output (or equivalent) cannot receive importance above a defined ceiling until confirmed by an external source or the user. **[IMP]**
 
 ## Section G. Isolation and Trust Boundaries (ISOLATION)
 
@@ -230,8 +245,8 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 
 ## Section I. Observability and Recovery (OBSERVABILITY & RECOVERY)
 
-- [ ] **I1** Memory contamination monitoring is operational: pattern signatures, quality score, alert threshold. **[IMP]**
-- [ ] **I2** Silent degradations are excluded: every graceful fallback is accompanied by a metric/alert, not just a log line; mass replacement of memory with stubs is detectable. Warnings in test runs are not noise — a run accepted with warnings is a false-green signal; acceptance requires warnings: 0 or explicitly documented per-warning exceptions. **[CRIT]**
+- [ ] **I1** Memory contamination monitoring is operational: pattern signatures, quality score, alert threshold. Monitoring should detect cases where prior memory appears in analysis of a current artifact without being present in the artifact itself (artifact/context contamination). **[IMP]**
+- [ ] **I2** Silent degradations are excluded: every graceful fallback is accompanied by a metric/alert, not just a log line; mass replacement of memory with stubs is detectable. Warnings in test runs are not noise — a run accepted with warnings is a false-green signal; acceptance requires warnings: 0 or explicitly documented per-warning exceptions. Empty diagnostic strings (error markers without file, cause, or object) are prohibited — visibility of monitoring without material for investigation is worse than honest silence. **[CRIT]**
 - [ ] **I3** Backups are regular; the restore procedure has been verified in practice (restore drill), not just by the existence of copies. **[IMP]**
 - [ ] **I4** Where recoverability is required, deletion is soft: weight suppression/archival instead of DELETE; a recovery path (unarchive) is implemented and tested. Hard deletion is permitted only where required by security, privacy, or legal policy. **[IMP]**
 - [ ] **I5** A health check exists: ready-made commands for liveness verification, counter consistency between stores, and availability of external dependencies. **[IMP]**
@@ -255,13 +270,15 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
   - "What changed in your perception of context recently?" (tests self-awareness of updates)
 - [ ] **I8** Adaptive behavioral parameters (personality traits, style calibrations) are persistent across restarts; restoration is verified at each startup. **[IMP]**
 - [ ] **I9** Logs are rotated automatically (by size or by date); maximum size of a single log file is capped; absence of rotation leads to uncontrolled log growth (hundreds of MB), blocking diagnostics and agent operations. **[IMP]**
-- [ ] **I10** Warning deduplication: the same warning repeated N+ times per interval is aggregated with a counter, not emitted individually; consequent status ambiguity ("success" on unperformed work) is escalated as a B5-class failure. **[IMP]**
+- [ ] **I10** Warning deduplication and noise budget: the same warning repeated N+ times per interval is aggregated with a counter, not emitted individually; after N identical warnings, deduplicate or escalate to a different level. Consequent status ambiguity ("success" on unperformed work) is escalated as a B5-class failure. **[IMP]**
+- [ ] **I11** Recovery loop cause diagnosis: any automatic restart (systemd/supervisor/self-heal) must be accompanied by a diagnostic trace of the root cause (stderr/exit code in a persistent journal). A recovery cycle without diagnosis is prohibited: after N repetitions — halt and alert, not eternal restart. **[CRIT]**
+- [ ] **I12** Escalation budget: a repeated dependency failure with identical signature must escalate after N occurrences (alert/halt/flagged degradation), not poll indefinitely. A system aware of a failure that does not escalate degrades silently. **[CRIT]**
 
 ## Section J. Change Management (CHANGE MANAGEMENT)
 
 - [ ] **J1** Independent logical changes are isolated: one change per observation interval. Coupled changes (e.g., schema + application code) are explicitly grouped and documented as a single logical unit. Simultaneous independent modifications are excluded (otherwise the cause of regression is non-localizable). **[CRIT]**
 - [ ] **J2** The success criterion of a change is measurable: baseline captured before (in tokens/numbers, not "by eye"), measurement after. **[IMP]**
-- [ ] **J3** Every resolved incident is closed with a regression guard test; a fix without a test is considered incomplete. A test that is never executed (silent skip, async without runner, missing marker) is equally incomplete — it provides no evidence of correctness. **[IMP]**
+- [ ] **J3** Every resolved incident is closed with a regression guard test; a fix without a test is considered incomplete. A test that is never executed (silent skip, async without runner, missing marker) is equally incomplete — it provides no evidence of correctness. Artifact-memory conflict cases should have regression guard tests where applicable. **[IMP]**
 - [ ] **J4** Local validation of context assembly (a snapshot of "what the model will actually see") precedes live testing. **[IMP]**
 - [ ] **J5** Changes are reversible: one change per commit, rollback of an individual step does not pull adjacent ones. **[IMP]**
 - [ ] **J6** A documentation cycle is maintained: diagnosis → spec → review → session log → report → post-solution pattern (generalization with applicability signals); patterns are checked for applicability at the start of each new spec. **[REC]**
@@ -290,6 +307,9 @@ Symptom → probable defect class. Used for quick navigation before a full pass.
 | Warnings "always existed," nobody reads them | False-green signal, warnings masking defects | I, J |
 | async tests in unittest wrapper | Silent test skip, unexecuted test definitions | J, H |
 | Test files found in assistant's live directory | Test isolation breach — filesystem not covered | H |
+| Service restarts every hour, nobody knows why | Recovery loop without cause diagnosis | I |
+| Dependency refused for days, system polls silently | Unescalated persistent failure | I |
+| Millions of identical warnings over months | Warning noise budget exceeded, observability destroyed | I |
 
 ---
 
@@ -304,16 +324,16 @@ System map completed:   yes / no (if no — audit is not complete)
 
 | Section | items | yes | partial | no | n/a | failed [CRIT] |
 |---------|-------|-----|---------|----|-----|---------------|
-| 0. Map               | 8  | | | | | |
+| 0. Map               | 9  | | | | | |
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
 | C. Growth             | 7  | | | | | |
 | D. Retrieval          | 9  | | | | | |
-| E. Assembly           | 11 | | | | | |
-| F. Feedback loop      | 7  | | | | | |
+| E. Assembly           | 12 | | | | | |
+| F. Feedback loop      | 8  | | | | | |
 | G. Isolation          | 7  | | | | | |
 | H. Concurrency        | 6  | | | | | |
-| I. Observability       | 10 | | | | | |
+| I. Observability       | 12 | | | | | |
 | J. Change management  | 6  | | | | | |
 
 Warnings: ______ (all with documented per-item exceptions; 0 = clean)
