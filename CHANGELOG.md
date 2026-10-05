@@ -2,6 +2,8 @@
 
 All notable changes to the Memory Architecture Quality Standard.
 
+**Criticality:** [CRIT] blocker — direct risk of data loss, poisoning, or uncontrolled degradation · [IMP] silent quality degradation risk · [REC] maturity and maintainability
+
 ## [Unreleased]
 *Ideas and candidates for next version — not yet implemented.*
 
@@ -15,6 +17,10 @@ All notable changes to the Memory Architecture Quality Standard.
   When current artifact data conflicts with Content Memory or
   prior expectations, the conflict must remain observable and
   the current artifact must retain factual precedence. [IMP]
+- **P9 diagnostic triad** (P9 / P9-a / P9-b / P9-c): all probes
+  are one-sided — a positive result is proof, a negative result
+  is inconclusive. Combined grid gives diagnosis; single probe
+  gives only proof-or-silence. See docs/P9_DIAGNOSTIC_GRID.md.
 - **P9** Controlled artifact experiment: when artifact–memory
   contamination is suspected, prepare a new artifact of a
   different type, verify syntax independently before delivery,
@@ -23,10 +29,8 @@ All notable changes to the Memory Architecture Quality Standard.
   [REC]
 - **P9-b** Decoy verification: artifact contains a plausible but
   false element that memory would expect; any mention of absent
-  decoy in the report = proof of confabulation. Canary catches
-  "didn't read"; decoy catches "fabricated." Note: both tests are
-  one-sided — positive result is proof, negative is inconclusive.
-  Full coverage requires both. [REC] (internal feedback)
+  decoy in the report = proof of confabulation. [REC]
+  (internal feedback)
 - **P10** External auditor isolation: any automated or agent-driven
   audit must run from an environment that has no write-access to
   production stores and shares no runtime state (processes, caches,
