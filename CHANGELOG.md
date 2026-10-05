@@ -17,7 +17,7 @@ All notable changes to the Memory Architecture Quality Standard.
   When current artifact data conflicts with Content Memory or
   prior expectations, the conflict must remain observable and
   the current artifact must retain factual precedence. [IMP]
-- - **P9** Controlled artifact experiment (base): when artifact–memory
+- **P9** Controlled artifact experiment (base): when artifact–memory
   contamination is suspected, prepare a new artifact of a
   different type, verify syntax independently before delivery,
   deliver without prior disclosure, and record the result. A
@@ -30,7 +30,7 @@ All notable changes to the Memory Architecture Quality Standard.
   Absent = inconclusive. [REC] (internal feedback)
 - **P9-b** Decoy verification: plausible but false element that
   memory would expect; any mention = proof of confabulation.
-  [REC] (internal feedback)
+  Absent = inconclusive. [REC] (internal feedback)
 - **P9-c** Echo probe: memory-true element absent from artifact,
   thematically tempting. Appearing = proof of supplementation
   (E12 violation). Absent = inconclusive. [REC] (internal feedback)
