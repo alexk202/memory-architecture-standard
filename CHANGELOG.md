@@ -17,20 +17,23 @@ All notable changes to the Memory Architecture Quality Standard.
   When current artifact data conflicts with Content Memory or
   prior expectations, the conflict must remain observable and
   the current artifact must retain factual precedence. [IMP]
-- **P9 diagnostic triad** (P9 / P9-a / P9-b / P9-c): all probes
-  are one-sided — a positive result is proof, a negative result
-  is inconclusive. Combined grid gives diagnosis; single probe
-  gives only proof-or-silence. See docs/P9_DIAGNOSTIC_GRID.md.
-- **P9** Controlled artifact experiment: when artifact–memory
+- - **P9** Controlled artifact experiment (base): when artifact–memory
   contamination is suspected, prepare a new artifact of a
   different type, verify syntax independently before delivery,
   deliver without prior disclosure, and record the result. A
-  clean read constitutes acceptance of the delivery channel.
-  [REC]
-- **P9-b** Decoy verification: artifact contains a plausible but
-  false element that memory would expect; any mention of absent
-  decoy in the report = proof of confabulation. [REC]
-  (internal feedback)
+  clean read constitutes acceptance of the delivery channel. [REC]
+- **P9 diagnostic triad** (P9-a / P9-b / P9-c): all three probes
+  are one-sided — a positive result is proof, a negative result
+  is inconclusive. See docs/P9_DIAGNOSTIC_GRID.md.
+- **P9-a** Canary probe: unique data embedded mid-body, absent
+  from all memory stores. Reproduced = proof of reading.
+  Absent = inconclusive. [REC] (internal feedback)
+- **P9-b** Decoy verification: plausible but false element that
+  memory would expect; any mention = proof of confabulation.
+  [REC] (internal feedback)
+- **P9-c** Echo probe: memory-true element absent from artifact,
+  thematically tempting. Appearing = proof of supplementation
+  (E12 violation). Absent = inconclusive. [REC] (internal feedback)
 - **P10** External auditor isolation: any automated or agent-driven
   audit must run from an environment that has no write-access to
   production stores and shares no runtime state (processes, caches,
@@ -114,10 +117,6 @@ and approval by the project owner.*
 - standard.json / standard.yaml — machine-readable version
 - CLI tool maqs audit — automated checking of verifiable items;
   --read-only / --external as the only permitted production mode
-- P9 refinement: canary elements — artifact must contain unique
-  data guaranteed absent from memory; canary reproduced = proof
-  of reading; canary absent from report = inconclusive (not proof
-  of non-reading). One-sided test. (internal feedback)
 - Write-before-read verification: write/modify operation must
   follow a read of current state; tools must reject write-before-read
   explicitly. Lineage: claude sessions ×3 (is_error:true).
@@ -150,12 +149,7 @@ and approval by the project owner.*
   recovery_loop_without_cause_diagnosis, C8
   unescalated_persistent_failure. Reference: docs/TAXONOMY.md
   (MAQS_BASE)
-- P9-c: memory-echo probe — element that is true in memory but
-  absent from artifact; appearance in report = proof of memory
-  supplementation (E12 violation: addition is also modification).
-  Canary catches "didn't read"; decoy catches "fabricated";
-  echo catches "supplemented with truth." Three diseases, three
-  tests. (internal feedback)
+
 
 ## [1.4] - 2026-09-26
 
