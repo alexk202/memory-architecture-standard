@@ -5,7 +5,64 @@ All notable changes to the Memory Architecture Quality Standard.
 **Criticality:** [CRIT] blocker — direct risk of data loss, poisoning, or uncontrolled degradation · [IMP] silent quality degradation risk · [REC] maturity and maintainability
 
 ## [Unreleased]
-*Ideas and candidates for next version — not yet implemented.*
+*Candidates for v1.6 — derived from MAQS_BASE Stage 6 empirical
+analysis (101,943 incidents from 8 assistant directories → 7,959
+canonical). Methodology: read-only external audit (P10), three-axis
+taxonomy, lineage-backed candidates, consilium review with
+unanimous/majority decisions. Attribution: agent execution with
+internal review and approval by the project owner.*
+
+### Added (MAQS_BASE Stage 6, unanimous)
+- **C8** Traceback coverage rule: every traceback class observed
+  in production must map to at least one pattern-coverage rule
+  (C1–C7 or dedicated handler). A traceback class with zero
+  coverage is a gap. Lineage: 20,728 tracebacks across 8
+  assistant directories with 0 pattern coverage — axis C rules
+  exist but produced no triggers in the entire corpus. [CRIT]
+- **I13** Secret exposure guard: secrets (API keys, tokens,
+  passwords) must never appear in plain text in logs, error
+  messages, or diagnostic output. A masker/redactor must be
+  applied before write. Includes credential-in-URL class: both
+  query-parameter form (`?token=...`) and path-embedded form
+  (`bot<id>:AA...` in request path). Lineage: 1 real secret
+  value + credential-in-URL patterns found in Stage 6 scan. [CRIT]
+
+### Added (MAQS_BASE Stage 6, majority)
+- **I14** Error handler registration: if an exception class is
+  probed (caught and re-raised or logged) but has no registered
+  handler or escalation path, the probe is incomplete —
+  detection without reaction is not coverage. [REC]
+
+### Changed (MAQS_BASE Stage 6, unanimous)
+- **D8** pinned axes: incompatible embedding dimensions map to
+  axes A3 × B1 + C2 (not A9 × B2 as previously categorized).
+  15/15 incidents were in the wrong category; the correct
+  assignment is: A3 (type mismatch), B1 (hard crash), C2
+  (validation failure). [CRIT]
+- **I10** expanded: warning noise budget — DEBUG-level messages
+  contribute 755 weight out of ~7,000 total; a DEBUG ceiling
+  pre-filter is required before incident classification.
+  Messages at DEBUG level are excluded from the incident
+  corpus unless explicitly promoted. [IMP]
+
+### Changed (MAQS_BASE Stage 6, majority)
+- **I12** Escalation budget B-axis: fixed at B2 ("visibility
+  without reaction") — a system that logs a dependency failure
+  but takes no escalation action (alert/halt/degrade) operates
+  at B2 regardless of log verbosity. Previously ambiguous
+  between B2 and B4. [CRIT]
+- **Format-aware matching** expanded: incident classification
+  must account for log level, file class (journal vs application
+  log vs config), and negative signals (success messages
+  incorrectly classified as incidents). Lineage: success-as-
+  incidents 3/1,030 weight, config noise 6/28 weight. [IMP]
+
+### Procedural (MAQS_BASE Stage 6)
+- Needs-review cluster resolution: clusters are resolved by
+  weight (sum of incident weights), not by count. Top-15
+  clusters cover 69% of needs_review incidents.
+- `_receive_event` × 1,664 — noise source identified;
+  procedural deduplication rule applied.
 
 ### Backlog
 - G8: Forgetting cascade (GDPR right to be forgotten —
@@ -26,11 +83,24 @@ All notable changes to the Memory Architecture Quality Standard.
   --read-only / --external as the only permitted production mode
 - Write-before-read verification (MAQS_BASE, H-section candidate)
 - Regex input bound (MAQS_BASE, A-section candidate)
-- Format-aware matching (MAQS_BASE)
 - Edit-state verification E13 (MAQS_BASE)
 - Context overflow guard (MAQS_BASE, observation only)
 - Type contract verification (MAQS_BASE)
 - Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
+
+### Notes (v1.6 RC)
+- Checklist items: 89 → 92 (added C8, I13, I14)
+- Protocol table updated: C=8, I=15
+- MAQS_BASE Stage 6: 101,943 incidents → 7,959 canonical,
+  1,928 needs_review
+- Numbering: I13 = Secret Exposure Guard, I14 = Error Handler
+  Registration (resolved from consilium discussion)
+- I11 (Recovery loop) and I12 (Escalation budget) from v1.5
+  confirmed by Stage 6 data with exact lineage match
+- Top needs_review clusters (webhook-secret Permission denied
+  ×22, context-truncate ×25) staged for Stage 7 review
+- 4 unanimous decisions, 3 majority decisions, 2 procedural rules
+- Format-aware matching moved from Backlog to Changed
 
 ## [1.5] - 2026-10-05
 
