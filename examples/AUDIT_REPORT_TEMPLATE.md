@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.5
+**Standard version:** MAQS v1.6
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Auditor:** [Name / Agent]
@@ -18,6 +18,9 @@
 - [ ] P6: Test isolation confirmed
 - [ ] P7: Log sizes checked
 - [ ] P8: Runtime environment recorded (uptime, last OS/package updates)
+- [ ] P9: Controlled artifact experiment (if applicable)
+- [ ] P10: External auditor isolation confirmed
+Footer: *Generated using MAQS v1.6*
 
 ## Baseline Metrics
 
@@ -37,13 +40,13 @@
 | 0. System Map | 9 | | | | | |
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
-| C. Growth Management | 7 | | | | | |
+| C. Growth Management | 8 | | | | | |
 | D. Retrieval | 9 | | | | | |
 | E. Context Assembly | 12 | | | | | |
 | F. Feedback Loop | 8 | | | | | |
 | G. Isolation | 7 | | | | | |
 | H. Concurrency | 6 | | | | | |
-| I. Observability | 12 | | | | | |
+| I. Observability | 16 | | | | | |
 | J. Change Management | 6 | | | | | |
 
 ## Critical Failures

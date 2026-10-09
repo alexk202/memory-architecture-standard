@@ -114,7 +114,7 @@ approval by the project owner.*
 
 ### Notes (v1.6)
 - Checklist items: 89 → 93 (added C8, I13, I14, I15)
-- Protocol table updated: C=8, I=16
+- Protocol table updated: C=8, I=15 (the v1.6 checklist contains I1–I15)
 - MAQS_BASE Stage 6: 101,943 incidents → 7,959 canonical,
   1,928 needs_review
 - Numbering: I13 = Secret Exposure Guard, I14 = Error Handler

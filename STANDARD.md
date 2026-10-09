@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.5 (2026-10-05)
+**Version:** 1.6 (2026-10-09)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -185,6 +185,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **C5** Caches (RAM structures, summarization caches) have TTL or an invalidation mechanism and are included in the growth map. **[IMP]**
 - [ ] **C6** Volume dynamics are monitored; anomalies (order-of-magnitude growth in a single operation) trigger alerts. **[IMP]**
 - [ ] **C7** Multimodal input deduplication by hash does not create unbounded counter growth and does not allow "flooding" memory freshness with a stream of unique variants. **[IMP]**
+- [ ] **C8** Traceback coverage rule: every traceback class observed in production must map to at least one pattern-coverage rule (C1–C7 or dedicated handler). A traceback class with zero coverage is a gap. Lineage: 20,728 tracebacks across 8 assistant directories with 0 pattern coverage — axis C rules exist but produced no triggers in the entire corpus. **[CRIT]**
 
 ## Section D. Retrieval Ranking and Gating (RETRIEVAL)
 
@@ -195,7 +196,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **D5** Retrieval is deterministic across restarts: keys are persistent; non-deterministic hashes/identifiers are not used as access keys. **[CRIT]**
 - [ ] **D6** Thresholds, limits, and retrieval weights are externalized to configuration, not hardcoded as magic numbers. **[REC]**
 - [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. **[CRIT]**
-- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. **[CRIT]**
+- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. Pinned axes: incompatible dimensions map to A3 × B1 + C2, not A9 × B2.**[CRIT]**
 - [ ] **D9** Results from external sources (web search, file read, RAG) are filtered against the active semantic context of the current session before entering context assembly. A keyword match with zero conceptual relevance to the current dialog is marked as low-relevance or excluded. Without this filter, a query for "Apple" during a programming discussion may return a pie recipe instead of a framework reference. **[IMP]**
 
 ## Section E. Context Assembly (ASSEMBLY)
@@ -273,6 +274,13 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **I10** Warning deduplication and noise budget: the same warning repeated N+ times per interval is aggregated with a counter, not emitted individually; after N identical warnings, deduplicate or escalate to a different level. Consequent status ambiguity ("success" on unperformed work) is escalated as a B5-class failure. **[IMP]**
 - [ ] **I11** Recovery loop cause diagnosis: any automatic restart (systemd/supervisor/self-heal) must be accompanied by a diagnostic trace of the root cause (stderr/exit code in a persistent journal). A recovery cycle without diagnosis is prohibited: after N repetitions — halt and alert, not eternal restart. **[CRIT]**
 - [ ] **I12** Escalation budget: a repeated dependency failure with identical signature must escalate after N occurrences (alert/halt/flagged degradation), not poll indefinitely. A system aware of a failure that does not escalate degrades silently. **[CRIT]**
+- [ ] **I13** Secret exposure guard: secrets (API keys, tokens, passwords) must never appear in plain text in logs, error messages, or diagnostic output. A masker/redactor must be applied before write. Includes credential-in-URL class: both query-parameter form (`?token=...`) and path-embedded form (`bot<id>:AA...` in request path). Lineage: 1 real secret value + credential-in-URL patterns found in Stage 6 scan. **[CRIT]**
+- [ ] **I14** Error handler registration: if an exception class is probed (caught and re-raised or logged) but has no registered handler or escalation path, the probe is incomplete — detection without reaction is not coverage. **[REC]**
+- [ ] **I15** Layer-aware diagnostics: memory diagnostics must identify which memory layer a query addresses (persistent stores, session context, transient state) before interpreting the answer. Expected answer quality differs by layer: verbatim recall is expected from persistent stores, approximate or noisy answers are normal for fading session context. A noisy answer from a transient layer is not evidence of degradation; a precise answer from a persistent layer is not evidence of contradiction. Layer identification is a prerequisite for valid interpretation. **[REC]**
+
+## Supplementary Recommendations
+
+- [ ] **SUPP-EXT-01** External code-semantics tools: agents without built-in semantic code navigation (symbol/references lookup, project memory) are strongly recommended to use external tools of the Serena class (LSP-based semantic servers, semantic search, project-scoped memory). Rationale: flat, file-by-file audit loses cross-module relationships (proxy calls, dynamic imports, duplicated logic) — the class of errors invisible to line-level review. Constraint: valid only in read-only mode with respect to the audited system, with tool state kept external (P10-compatible); any tool with write access to the audited store is out of scope of this recommendation. **[REC]**
 
 ## Section J. Change Management (CHANGE MANAGEMENT)
 
@@ -327,13 +335,13 @@ System map completed:   yes / no (if no — audit is not complete)
 | 0. Map               | 9  | | | | | |
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
-| C. Growth             | 7  | | | | | |
+| C. Growth             | 8 | | | | | |
 | D. Retrieval          | 9  | | | | | |
 | E. Assembly           | 12 | | | | | |
 | F. Feedback loop      | 8  | | | | | |
 | G. Isolation          | 7  | | | | | |
 | H. Concurrency        | 6  | | | | | |
-| I. Observability       | 12 | | | | | |
+| I. Observability       | 15 | | | | | |
 | J. Change management  | 6  | | | | | |
 
 Warnings: ______ (all with documented per-item exceptions; 0 = clean)
