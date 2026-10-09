@@ -5,12 +5,23 @@ All notable changes to the Memory Architecture Quality Standard.
 **Criticality:** [CRIT] blocker — direct risk of data loss, poisoning, or uncontrolled degradation · [IMP] silent quality degradation risk · [REC] maturity and maintainability
 
 ## [Unreleased]
-*Candidates for v1.6 — derived from MAQS_BASE Stage 6 empirical
-analysis (101,943 incidents from 8 assistant directories → 7,959
-canonical). Methodology: read-only external audit (P10), three-axis
-taxonomy, lineage-backed candidates, consilium review with
-unanimous/majority decisions. Attribution: agent execution with
-internal review and approval by the project owner.*
+**SUPP-EXT-01** External code-semantics tools: agents without
+  built-in semantic code navigation (symbol/references lookup,
+  project memory) are strongly recommended to use external tools
+  of the Serena class (LSP-based semantic servers, semantic search,
+  project-scoped memory). Rationale: flat, file-by-file audit loses
+  cross-module relationships (proxy calls, dynamic imports, duplicated
+  logic) — the class of errors invisible to line-level review.
+  Constraint: valid only in read-only mode with respect to the
+  audited system, with tool state kept external (P10-compatible);
+  any tool with write access to the audited store is out of scope
+  of this recommendation. [REC]
+  *Candidates for v1.6 — derived from MAQS_BASE Stage 6 empirical
+  analysis (101,943 incidents from 8 assistant directories → 7,959
+  canonical). Methodology: read-only external audit (P10), three-axis
+  taxonomy, lineage-backed candidates, consilium review with
+  unanimous/majority decisions. Attribution: agent execution with
+  internal review and approval by the project owner.*
 
 ### Added (MAQS_BASE Stage 6, unanimous)
 - **C8** Traceback coverage rule: every traceback class observed
