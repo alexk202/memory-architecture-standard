@@ -5,7 +5,11 @@ All notable changes to the Memory Architecture Quality Standard.
 **Criticality:** [CRIT] blocker — direct risk of data loss, poisoning, or uncontrolled degradation · [IMP] silent quality degradation risk · [REC] maturity and maintainability
 
 ## [Unreleased]
-**SUPP-EXT-01** External code-semantics tools: agents without
+
+## [1.6] - 2026-10-09
+
+### Added
+- **SUPP-EXT-01** External code-semantics tools: agents without
   built-in semantic code navigation (symbol/references lookup,
   project memory) are strongly recommended to use external tools
   of the Serena class (LSP-based semantic servers, semantic search,
@@ -16,14 +20,14 @@ All notable changes to the Memory Architecture Quality Standard.
   audited system, with tool state kept external (P10-compatible);
   any tool with write access to the audited store is out of scope
   of this recommendation. [REC]
-  *Candidates for v1.6 — derived from MAQS_BASE Stage 6 empirical
-  analysis (101,943 incidents from 8 assistant directories → 7,959
-  canonical). Methodology: read-only external audit (P10), three-axis
-  taxonomy, lineage-backed candidates, consilium review with
-  unanimous/majority decisions. Attribution: agent execution with
-  internal review and approval by the project owner.*
 
 ### Added (MAQS_BASE Stage 6, unanimous)
+*Derived from MAQS_BASE Stage 6 empirical analysis (101,943
+incidents from 8 assistant directories → 7,959 canonical).
+Methodology: read-only external audit (P10), three-axis taxonomy,
+lineage-backed candidates, consilium review with unanimous/majority
+decisions. Attribution: agent execution with internal review and
+approval by the project owner.*
 - **C8** Traceback coverage rule: every traceback class observed
   in production must map to at least one pattern-coverage rule
   (C1–C7 or dedicated handler). A traceback class with zero
@@ -43,7 +47,6 @@ All notable changes to the Memory Architecture Quality Standard.
   probed (caught and re-raised or logged) but has no registered
   handler or escalation path, the probe is incomplete —
   detection without reaction is not coverage. [REC]
-
 - **I15** Layer-aware diagnostics: memory diagnostics must identify
   which memory layer a query addresses (persistent stores, session
   context, transient state) before interpreting the answer. Expected
@@ -109,7 +112,7 @@ All notable changes to the Memory Architecture Quality Standard.
 - Type contract verification (MAQS_BASE)
 - Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
 
-### Notes (v1.6 RC)
+### Notes (v1.6)
 - Checklist items: 89 → 93 (added C8, I13, I14, I15)
 - Protocol table updated: C=8, I=16
 - MAQS_BASE Stage 6: 101,943 incidents → 7,959 canonical,
