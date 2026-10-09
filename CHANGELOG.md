@@ -44,6 +44,16 @@ All notable changes to the Memory Architecture Quality Standard.
   handler or escalation path, the probe is incomplete —
   detection without reaction is not coverage. [REC]
 
+- **I15** Layer-aware diagnostics: memory diagnostics must identify
+  which memory layer a query addresses (persistent stores, session
+  context, transient state) before interpreting the answer. Expected
+  answer quality differs by layer: verbatim recall is expected from
+  persistent stores, approximate or noisy answers are normal for
+  fading session context. A noisy answer from a transient layer is
+  not evidence of degradation; a precise answer from a persistent
+  layer is not evidence of contradiction. Layer identification is a
+  prerequisite for valid interpretation. [REC]
+
 ### Changed (MAQS_BASE Stage 6, unanimous)
 - **D8** pinned axes: incompatible embedding dimensions map to
   axes A3 × B1 + C2 (not A9 × B2 as previously categorized).
@@ -100,8 +110,8 @@ All notable changes to the Memory Architecture Quality Standard.
 - Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
 
 ### Notes (v1.6 RC)
-- Checklist items: 89 → 92 (added C8, I13, I14)
-- Protocol table updated: C=8, I=15
+- Checklist items: 89 → 93 (added C8, I13, I14, I15)
+- Protocol table updated: C=8, I=16
 - MAQS_BASE Stage 6: 101,943 incidents → 7,959 canonical,
   1,928 needs_review
 - Numbering: I13 = Secret Exposure Guard, I14 = Error Handler
