@@ -2,15 +2,15 @@
 
 **A practical audit checklist for LLM-based systems with persistent memory.**
 
-[![Version](https://img.shields.io/badge/version-1.6-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.7-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
-[![Items](https://img.shields.io/badge/checklist-93_items-orange.svg)]
+[![Items](https://img.shields.io/badge/checklist-96_items-orange.svg)]
 
 ---
 
 ## What Is This?
 
-An 93-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
+A 96-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
 
 Covers the full memory loop: ingestion → storage → retrieval → context assembly → model → output → feedback.
 
@@ -55,19 +55,19 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 
 | Section | Focus | Items |
 |---------|-------|-------|
-| **0. System Map** | Preparation: identify all stores, paths, keys, baselines | 9 |
+| **0. System Map** | Preparation: identify all stores, paths, keys, baselines | 10 |
 | **A. Input Validation** | What enters memory — and what shouldn't | 7 |
 | **B. Write Integrity** | Idempotency, deduplication, transactions | 6 |
 | **C. Growth Management** | Limits, retention, cache invalidation | 8 |
 | **D. Retrieval** | Ranking, gating, embedding compatibility | 9 |
-| **E. Context Assembly** | Summarization, budgets, position awareness, artifact separation | 12 |
+| **E. Context Assembly** | Summarization, budgets, position awareness, artifact separation | 13 |
 | **F. Feedback Loop** | Anti-recursion, echo prevention, authority laundering | 8 |
 | **G. Isolation** | Trust boundaries, domain separation, negative fixtures | 7 |
 | **H. Concurrency** | Migrations, races, test isolation | 6 |
-| **I. Observability** | Monitoring, recovery, diagnostics, warning dedup, escalation | 15 |
+| **I. Observability** | Monitoring, recovery, diagnostics, warning dedup, escalation | 16 |
 | **J. Change Management** | One change at a time, rollback, baselines | 6 |
 | **K. Quick Diagnostics** | Symptom → probable defect mapping | — |
-| | **Total** | **93** |
+| | **Total** | **96** |
 
 ## Criticality Levels
 
@@ -96,6 +96,10 @@ The standard includes a mandatory preparation phase for live systems (Section 2.
 7. **Check log sizes** — uncontrolled growth blocks the auditing agent
 
 Post-audit: remediation via roadmap, one wave at a time, with commits and status updates after each.
+
+## Documentation
+
+- [`docs/ADMISSION_CRITERIA.md`](docs/ADMISSION_CRITERIA.md) — admission gate for new checklist items
 
 ## Companion Articles
 

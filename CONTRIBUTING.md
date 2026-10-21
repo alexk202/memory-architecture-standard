@@ -6,7 +6,7 @@ Thank you for your interest in improving the Memory Architecture Quality Standar
 
 ### New Checklist Items
 
-Every item in the standard must be **backed by a real incident**. To propose a new item:
+Every item in the standard must be **backed by a real incident**. Every candidate must also pass the admission gate ([docs/ADMISSION_CRITERIA.md](docs/ADMISSION_CRITERIA.md), section 2) and the release sync checklist (section 9) before merge. To propose a new item:
 
 1. Open an issue with the title: `[NEW ITEM] Section X: Brief description`
 2. Include:

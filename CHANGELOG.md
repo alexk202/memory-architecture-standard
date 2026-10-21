@@ -6,6 +6,133 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+## [1.7] - 2026-10-21
+
+### Added (live remediation session, 2026-10-21)
+*Derived from full remediation of one live assistant memory system
+(~10,000 records, 5 storage layers, 14 modules, ~70 public functions).
+Methodology: single-system manual session — measurements are per-DB
+counts with record IDs and backups, not journal corpus frequencies.
+Each candidate passed admission criteria (docs/ADMISSION_CRITERIA.md):
+architecturally general, not covered by v1.6, verifiable by auditor,
+with measured lineage. Attribution: agent execution with internal
+review and approval by the project owner.*
+- **0.8** Retrieval path completeness: every store that participates
+  in writing must be reachable by the primary retrieval path. A store
+  written to but not queried — or queried only in a fallback branch
+  that does not trigger — is silent data loss at assembly time. The
+  architecture map (0.2) must verify not only read/write ownership
+  but path reachability in the working retrieval code. Lineage:
+  9,848 records in one store with 0% vector coverage; keyword search
+  existed only in an unreachable fallback branch; manual query for
+  a known term present in three tables returned zero results in
+  assembled context. [CRIT]
+- **E13** Context key rendering completeness: every key produced by
+  the context assembler must be consumed by the prompt renderer. A
+  key that is assembled, filtered, and then not rendered silently
+  discards retrieval results at the last step. Lineage: one context
+  key was assembled and passed through context graph filtering but
+  had no rendering clause in the prompt builder; vector search results
+  vanished between assembly and prompt. Additionally: a diagnostic
+  snapshot script carried its own copy of the assembly logic without
+  this key — two divergent truths about the prompt. [IMP]
+- **I16** Diagnostic self-contamination: a diagnostic exchange
+  (I7 self-report, health check) is itself a record written into the
+  diagnosed memory. After the finding is resolved, the diagnostic
+  record must surface paired with its resolution (link, marker, or
+  co-injection) — not as "current state." An unresolved diagnostic
+  complaint recursively confirms itself. Lineage: I7 self-report
+  (importance 0.8, short-term layer) persisted as the fact "context
+  is fragmentary" after the underlying issue was fixed; a predecessor
+  record with the same complaint existed 3 months earlier (2026-07),
+  also unlinked from its resolution — the pattern had already
+  reproduced. [IMP]
+- **P11** Agent audit discipline: the auditing agent must not invoke
+  any method of the audited system that has write side-effects
+  (decay, access counters, embedding insertion, lazy initialization)
+  on live stores — even when the method is semantically a "read" or
+  "query." Diagnostic probes run on file-level copies; any exception
+  (live probe with owner permission) requires pre/post counter
+  verification. Violation = audit contamination; affected
+  measurements are invalid. Complements P10 (environment isolation):
+  P10 constrains the environment, P11 constrains the agent's
+  behavior within it. Lineage: 117 anonymous query embeddings
+  written to live vector store + decay ×0.9 applied to live temporal
+  records during diagnostic probes; remediation could not distinguish
+  probe damage from historical mechanism damage. [CRIT]
+
+### Changed (live remediation session, 2026-10-21)
+- **A1** expanded: identity extraction must distinguish between the
+  chat speaker's self-introduction and first-person references in
+  attached file content or relayed messages from other agents. A
+  file's first-person text is not the speaker. Lineage: a curated
+  collection of first-person quotes from another agent overrode the
+  owner's name in user_information; every system prompt after that
+  addressed the wrong person; 846 junk personal_info rows accumulated
+  from a broad regex `r'[Яя] ([А-Яа-я]+)'`. Secondary defect: a
+  strict extractor pattern never fired because it did not match
+  sentence-initial capitalization — broad + dead = double failure. [CRIT]
+- **B1** expanded: application-level deduplication declares ONE
+  semantic key per event, valid across ALL write paths. Lineage:
+  605 duplicate rows — one response written by both sync and async
+  learning paths with different keys (trigger_pattern vs
+  response_pattern); minute-window guard was the fix, not a proper
+  semantic key. [CRIT]
+- **D7** expanded: all readers of the same store apply a uniform
+  decay/side-effect policy at read time. Lineage: one reader applied
+  importance decay on inject (−1, floor 1), another reader of the
+  same store sorted by raw importance without decay — 64 legacy
+  rows held top-5 position for over a year. [IMP]
+- **D8** expanded: migration-or-version-marker contract covers all
+  scored/ranked representations, not only embedding dimensions.
+  Mixed scales in one sortable column (importance, confidence,
+  similarity) are prohibited without a version marker. Same class
+  as embedding reindexing: the representation scheme changed, the
+  existing data was not migrated. Lineage: 64 legacy rows on a
+  1–10 scale vs 3,088 rows on a ≤1 scale in one column; ORDER BY
+  importance DESC without version → top-5 of every system prompt
+  frozen on records from April 2025; I7 self-report: "last week —
+  almost empty, a blank spot" despite fresh records existing. [CRIT]
+- **F5** expanded: the search query itself must not be persisted in
+  the searched store as a side-effect. Self-match (similarity 1.0)
+  displaces real results from the retrieval limit. Lineage: 117
+  anonymous embeddings accumulated from search queries; each query
+  matched itself at rank 1, consuming one of two vector search
+  slots. [IMP]
+- **I3** expanded: backup before a DB operation = unique traceable
+  name (source prefix, no basename collisions between same-named
+  DBs in different directories) + integrity_check + row counts
+  after copy. Lineage: a "backup" contained a different (older) DB —
+  two same-named files in different directories, the second
+  overwrote the first via basename; marked .INVALID with README. [IMP]
+- **I15** expanded: layer-aware diagnostics require a pinned
+  timestamp format per store; mixed formats (ISO-T local time vs
+  SQL-style UTC) force every consumer to carry a dual parser and
+  silently shift by timezone offset. Lineage: `_format_memory_time`
+  treated naive T-strings as UTC (+3h shift); empirically T-format
+  was always Python-local, space-format was always SQLite-UTC. [REC]
+- **P10** expanded: `mode=ro` does not guarantee isolation when
+  dependencies contain lazy-initialization write paths (table
+  creation, seed data). A read-only diagnostic tool that
+  lazy-initializes storage on first invocation writes to the live
+  DB. Lineage: a prompt snapshot utility connected a storage layer
+  with its own initialization; on a live DB the "snapshot" would
+  have silently written seed data. [CRIT]
+
+### Notes (v1.7)
+- Checklist items: 93 → 96 (added 0.8, E13, I16)
+- Preparation phase: P1–P10 → P1–P11 (added P11 agent audit discipline)
+- Protocol table updated: 0=10, E=13, I=16
+- 8 existing items expanded with new lineage
+- Section K: +1 symptom row (retrieval results assembled but absent
+  from rendered prompt → E13)
+- Backlog: "Edit-state verification" renumbered E13 → E14 (E13 assigned
+  to context key rendering)
+- Source: single live system, manual session — not journal corpus;
+  candidates validated by admission criteria, not MAQS_BASE pipeline
+- Admission gate for future candidates codified in
+  docs/ADMISSION_CRITERIA.md
+
 ## [1.6] - 2026-10-09
 
 ### Added
@@ -107,7 +234,7 @@ approval by the project owner.*
   --read-only / --external as the only permitted production mode
 - Write-before-read verification (MAQS_BASE, H-section candidate)
 - Regex input bound (MAQS_BASE, A-section candidate)
-- Edit-state verification E13 (MAQS_BASE)
+- Edit-state verification E14 (MAQS_BASE; renumbered — E13 assigned to context key rendering, v1.7)
 - Context overflow guard (MAQS_BASE, observation only)
 - Type contract verification (MAQS_BASE)
 - Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)

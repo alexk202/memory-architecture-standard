@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.6 (2026-10-09)
+**Version:** 1.7 (2026-10-21)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -95,9 +95,12 @@ Prepare a new artifact of a different type, verify syntax independently before d
 - **P9-c** Echo probe: memory-true element absent from artifact, thematically tempting. Appearing = proof of supplementation (E12 violation). Absent = inconclusive.
 
 **Step P10. External auditor isolation.**
-Any automated or agent-driven audit must run from an environment that has no write-access to production stores and shares no runtime state (processes, caches, loaded embedding models) with the audited system. Audit results are written only to an external report.
+Any automated or agent-driven audit must run from an environment that has no write-access to production stores and shares no runtime state (processes, caches, loaded embedding models) with the audited system. Audit results are written only to an external report. `mode=ro` alone does not guarantee isolation when dependencies contain lazy-initialization write paths (table creation, seed data): a read-only diagnostic tool that lazy-initializes storage on first invocation writes to the live database.
 
-Only after completing steps P1–P10 can the section-by-section audit begin.
+**Step P11. Agent audit discipline.**
+The auditing agent must not invoke any method of the audited system that has write side-effects (decay, access counters, embedding insertion, lazy initialization) on live stores — even when the method is semantically a "read" or "query." Diagnostic probes run on file-level copies; any exception (live probe with owner permission) requires pre/post counter verification. Violation = audit contamination; affected measurements are invalid. P10 constrains the environment; P11 constrains the agent's behavior within it.
+
+Only after completing steps P1–P11 can the section-by-section audit begin.
 
 ### 2.2. Conducting the Audit
 
@@ -156,10 +159,11 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **0.6** Baseline metrics captured: storage volumes (records/bytes), typical assembled context size in tokens, retrieval time. **[IMP]**
 - [ ] **0.6a** For each store and for the assembled context, a local baseline is recorded (volume, typical context size, % model-generated content). Anomalies are defined relative to the system's own baseline, not universal numbers. **[IMP]**
 - [ ] **0.7** All points where user or external content enters privileged (system) parts of the prompt are identified. **[CRIT]**
+- [ ] **0.8** Retrieval path completeness: every store that participates in writing must be reachable by the primary retrieval path. A store written to but not queried — or queried only in a fallback branch that does not trigger — is silent data loss at assembly time. The architecture map (0.2) must verify not only read/write ownership but path reachability in the working retrieval code. Lineage: 9,848 records in one store with 0% vector coverage; keyword search existed only in an unreachable fallback branch; manual query for a known term present in three tables returned zero results in assembled context. **[CRIT]**
 
 ## Section A. Input Validation (INGESTION)
 
-- [ ] **A1** All external sources (files from watched directories, web content, images, output from other agents) pass a trust filter before being written to memory. **[CRIT]**
+- [ ] **A1** All external sources (files from watched directories, web content, images, output from other agents) pass a trust filter before being written to memory. Identity extraction distinguishes between the chat speaker's self-introduction and first-person references in attached file content or relayed messages from other agents: a file's first-person text is not the speaker. **[CRIT]**
 - [ ] **A2** Secrets (keys, tokens, passwords, personal data) are detected and excluded before indexing and vectorization. **[CRIT]**
 - [ ] **A3** Service content (logs, diagnostic reports, service markers, prompts) is flagged and excluded from context assembly (while it may remain in history). **[CRIT]**
 - [ ] **A4** Meaning extraction does not conflate form with meaning: code fragments, syntax, paths, and technical markers do not become "concepts" or "memories." **[IMP]**
@@ -169,7 +173,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 
 ## Section B. Write Idempotency and Integrity (WRITE)
 
-- [ ] **B1** Writing is idempotent: repeated delivery of an event (retry, update duplication, double invocation) does not create a duplicate — deduplication at application level or UNIQUE constraint in schema. **[CRIT]**
+- [ ] **B1** Writing is idempotent: repeated delivery of an event (retry, update duplication, double invocation) does not create a duplicate — deduplication at application level or UNIQUE constraint in schema. Application-level deduplication declares ONE semantic key per event, valid across ALL write paths. **[CRIT]**
 - [ ] **B2** Deduplication direction is correct: the current record is preserved, the old duplicate is suppressed (not the reverse). **[CRIT]**
 - [ ] **B3** Deduplication is by semantic/content key, not by source. Semantically duplicate information from different sources must not create multiple active memory entries. Source diversity is preserved as provenance or corroborating evidence, not as duplicated memory. **[IMP]**
 - [ ] **B4** Writing to multiple stores (message + vector + index) is transactional or compensable: partial writes ("message saved, vector not") are excluded. **[IMP]**
@@ -195,8 +199,8 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **D4** Recency boost is bounded by thresholds: fresh irrelevant content does not displace old relevant content. **[IMP]**
 - [ ] **D5** Retrieval is deterministic across restarts: keys are persistent; non-deterministic hashes/identifiers are not used as access keys. **[CRIT]**
 - [ ] **D6** Thresholds, limits, and retrieval weights are externalized to configuration, not hardcoded as magic numbers. **[REC]**
-- [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. **[CRIT]**
-- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. Pinned axes: incompatible dimensions map to A3 × B1 + C2, not A9 × B2.**[CRIT]**
+- [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. All readers of the same store apply a uniform decay/side-effect policy at read time. **[CRIT]**
+- [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. Pinned axes: incompatible dimensions map to A3 × B1 + C2, not A9 × B2. The migration-or-version-marker contract covers all scored/ranked representations, not only embedding dimensions: mixed scales in one sortable column (importance, confidence, similarity) are prohibited without a version marker. **[CRIT]**
 - [ ] **D9** Results from external sources (web search, file read, RAG) are filtered against the active semantic context of the current session before entering context assembly. A keyword match with zero conceptual relevance to the current dialog is marked as low-relevance or excluded. Without this filter, a query for "Apple" during a programming discussion may return a pie recipe instead of a framework reference. **[IMP]**
 
 ## Section E. Context Assembly (ASSEMBLY)
@@ -213,6 +217,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **E10** A mechanism exists for protecting emotionally significant records from summarization and decay (protected/alive memory); the maximum number of protected records is capped. **[REC]**
 - [ ] **E11** Critical information is placed at the beginning and end of the context window, not in the middle; for long contexts, especially where positional attention degradation has been observed, this placement is verified (ref: Liu et al., "Lost in the Middle," 2023). **[IMP]**
 - [ ] **E12** Artifact–Memory Separation: external artifacts must remain distinguishable from memory and contextual representations of their content. Memory may preserve why an artifact is being analyzed and which elements require attention, but must not silently substitute, reconstruct, or modify the current artifact representation. When current artifact data conflicts with memory or prior expectations, the conflict must remain observable and the current artifact must retain factual precedence. **[IMP]**
+- [ ] **E13** Context key rendering completeness: every key produced by the context assembler must be consumed by the prompt renderer. A key that is assembled, filtered, and then not rendered silently discards retrieval results at the last step. Lineage: one context key passed assembly and context filtering but had no rendering clause in the prompt builder; vector search results vanished between assembly and prompt. A diagnostic snapshot script carried its own copy of the assembly logic without this key — two divergent truths about the prompt. **[IMP]**
 
 ## Section F. Feedback Loop (FEEDBACK LOOP)
 
@@ -220,7 +225,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **F2** The summarizer/compressor does not close the feedback loop: the summarization call does not initiate memory writes, does not receive conversation history, and does not re-enter the main feedback path. **[CRIT]**
 - [ ] **F3** Repeated summarization is bounded and provenance-aware: a summary cannot silently become the source for indefinite further compression. Maximum compression depth is defined. **[IMP]**
 - [ ] **F4** A recursive artifact detector exists: meta-response signatures, control of the proportion of model-generated content in memory, alert on growth. **[IMP]**
-- [ ] **F5** Memory recall results inserted into response text do not "leak" back into long-term memory without a filter. **[CRIT]**
+- [ ] **F5** Memory recall results inserted into response text do not "leak" back into long-term memory without a filter. The search query itself must not be persisted in the searched store as a side-effect: a self-match displaces real results from the retrieval limit. **[CRIT]**
 - [ ] **F6** The path "input error → distorted response → writing distortion to memory" is broken: context assembly errors are not masked as valid content. **[CRIT]**
 - [ ] **F7** Authority laundering is prevented: a low-trust record must not inherit trust level by being summarized or cited alongside a high-trust record. Compression must preserve or downgrade trust level, never upgrade it through co-occurrence. **[CRIT]**
 - [ ] **F8** Model-output importance ceiling: records with provenance source=model_output (or equivalent) cannot receive importance above a defined ceiling until confirmed by an external source or the user. **[IMP]**
@@ -248,7 +253,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 
 - [ ] **I1** Memory contamination monitoring is operational: pattern signatures, quality score, alert threshold. Monitoring should detect cases where prior memory appears in analysis of a current artifact without being present in the artifact itself (artifact/context contamination). **[IMP]**
 - [ ] **I2** Silent degradations are excluded: every graceful fallback is accompanied by a metric/alert, not just a log line; mass replacement of memory with stubs is detectable. Warnings in test runs are not noise — a run accepted with warnings is a false-green signal; acceptance requires warnings: 0 or explicitly documented per-warning exceptions. Empty diagnostic strings (error markers without file, cause, or object) are prohibited — visibility of monitoring without material for investigation is worse than honest silence. **[CRIT]**
-- [ ] **I3** Backups are regular; the restore procedure has been verified in practice (restore drill), not just by the existence of copies. **[IMP]**
+- [ ] **I3** Backups are regular; the restore procedure has been verified in practice (restore drill), not just by the existence of copies. A backup taken before a DB operation must have a unique traceable name (source prefix — no basename collisions between same-named files in different directories) and be verified after copy (integrity check, row counts). **[IMP]**
 - [ ] **I4** Where recoverability is required, deletion is soft: weight suppression/archival instead of DELETE; a recovery path (unarchive) is implemented and tested. Hard deletion is permitted only where required by security, privacy, or legal policy. **[IMP]**
 - [ ] **I5** A health check exists: ready-made commands for liveness verification, counter consistency between stores, and availability of external dependencies. **[IMP]**
 - [ ] **I6** Availability of auxiliary infrastructure (web consoles, admin panels) is protected by authentication; they do not expose memory externally. **[CRIT]**
@@ -276,7 +281,8 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **I12** Escalation budget: a repeated dependency failure with identical signature must escalate after N occurrences (alert/halt/flagged degradation), not poll indefinitely. A system aware of a failure that does not escalate degrades silently. **[CRIT]**
 - [ ] **I13** Secret exposure guard: secrets (API keys, tokens, passwords) must never appear in plain text in logs, error messages, or diagnostic output. A masker/redactor must be applied before write. Includes credential-in-URL class: both query-parameter form (`?token=...`) and path-embedded form (`bot<id>:AA...` in request path). Lineage: 1 real secret value + credential-in-URL patterns found in Stage 6 scan. **[CRIT]**
 - [ ] **I14** Error handler registration: if an exception class is probed (caught and re-raised or logged) but has no registered handler or escalation path, the probe is incomplete — detection without reaction is not coverage. **[REC]**
-- [ ] **I15** Layer-aware diagnostics: memory diagnostics must identify which memory layer a query addresses (persistent stores, session context, transient state) before interpreting the answer. Expected answer quality differs by layer: verbatim recall is expected from persistent stores, approximate or noisy answers are normal for fading session context. A noisy answer from a transient layer is not evidence of degradation; a precise answer from a persistent layer is not evidence of contradiction. Layer identification is a prerequisite for valid interpretation. **[REC]**
+- [ ] **I15** Layer-aware diagnostics: memory diagnostics must identify which memory layer a query addresses (persistent stores, session context, transient state) before interpreting the answer. Expected answer quality differs by layer: verbatim recall is expected from persistent stores, approximate or noisy answers are normal for fading session context. A noisy answer from a transient layer is not evidence of degradation; a precise answer from a persistent layer is not evidence of contradiction. Layer identification is a prerequisite for valid interpretation. Layer-aware diagnostics require a pinned timestamp format per store: mixed formats (ISO-T local time vs SQL-style UTC) force every consumer to carry a dual parser and silently shift by timezone offset. **[REC]**
+- [ ] **I16** Diagnostic self-contamination: a diagnostic exchange (I7 self-report, health check) is itself a record written into the diagnosed memory. After the finding is resolved, the diagnostic record must surface paired with its resolution (link, marker, or co-injection) — not as "current state." An unresolved diagnostic complaint recursively confirms itself. Lineage: a self-report persisted as the fact "context is fragmentary" after the underlying issue was fixed; a predecessor record with the same complaint months earlier was also unlinked from its resolution — the pattern had already reproduced. **[IMP]**
 
 ## Supplementary Recommendations
 
@@ -302,6 +308,7 @@ Symptom → probable defect class. Used for quick navigation before a full pass.
 | Same data repeats in context | Write idempotency | B |
 | Storage volume grew drastically after rebuild | Non-idempotent indexing | C |
 | Data exists in storage, retrieval is empty | Write/read key mismatch | 0, D |
+| Retrieval results assembled but absent from rendered prompt | Context key assembled but not consumed by renderer | E13 |
 | "Works sometimes," "helps after restart" | Hidden stores, RAM state, cache | 0, C |
 | Database is "clean" but the problem persists | There is a store outside the map | 0 |
 | Old irrelevant displaces new | Static importance vs relevance | D |
@@ -332,16 +339,16 @@ System map completed:   yes / no (if no — audit is not complete)
 
 | Section | items | yes | partial | no | n/a | failed [CRIT] |
 |---------|-------|-----|---------|----|-----|---------------|
-| 0. Map               | 9  | | | | | |
+| 0. Map               | 10 | | | | | |
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
 | C. Growth             | 8 | | | | | |
 | D. Retrieval          | 9  | | | | | |
-| E. Assembly           | 12 | | | | | |
+| E. Assembly           | 13 | | | | | |
 | F. Feedback loop      | 8  | | | | | |
 | G. Isolation          | 7  | | | | | |
 | H. Concurrency        | 6  | | | | | |
-| I. Observability       | 15 | | | | | |
+| I. Observability       | 16 | | | | | |
 | J. Change management  | 6  | | | | | |
 
 Warnings: ______ (all with documented per-item exceptions; 0 = clean)
