@@ -6,6 +6,35 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Backlog (pending)
+
+- MAQS_BASE Stage 7: review of staged needs_review clusters
+  (webhook-secret Permission denied ×22, context-truncate ×25);
+  candidates pass the admission gate (docs/ADMISSION_CRITERIA.md §2),
+  growth budget (§5) and release sync checklist (§9) before entering
+  a release
+- E14 Edit-state verification (MAQS_BASE) — renumbered from E13
+  (v1.7); awaiting measured lineage
+- G8: Forgetting cascade (GDPR right to be forgotten —
+  coordinated deletion across all stores)
+- docs/VERIFICATION_QUERIES.md — example SQL/commands for
+  each [CRIT] item; expand with filesystem and process checks
+  (log sizes, orphaned index files, mtime divergence between
+  related stores), not only SQL
+- docs/CONTEXT_PROVENANCE.md — provenance labels
+  (artifact_now / memory / model_output) in assembled context;
+  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
+  (feedback from personal AI assistant)
+- Section K: add "Tool" column with example verification tools
+- standard.json / standard.yaml — machine-readable version
+- CLI tool maqs audit — automated checking of verifiable items;
+  --read-only / --external as the only permitted production mode
+- Write-before-read verification (MAQS_BASE, H-section candidate)
+- Regex input bound (MAQS_BASE, A-section candidate)
+- Context overflow guard (MAQS_BASE, observation only)
+- Type contract verification (MAQS_BASE)
+- Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
+
 ## [1.7] - 2026-10-21
 
 ### Added (live remediation session, 2026-10-21)
@@ -214,30 +243,6 @@ approval by the project owner.*
   clusters cover 69% of needs_review incidents.
 - `_receive_event` × 1,664 — noise source identified;
   procedural deduplication rule applied.
-
-### Backlog
-- G8: Forgetting cascade (GDPR right to be forgotten —
-  coordinated deletion across all stores)
-- docs/VERIFICATION_QUERIES.md — example SQL/commands for
-  each [CRIT] item; expand with filesystem and process checks
-  (log sizes, orphaned index files, mtime divergence between
-  related stores), not only SQL
-- docs/ARTIFACT_MEMORY_PIPELINE.md — full research protocol
-  for artifact-memory separation experiments
-- docs/CONTEXT_PROVENANCE.md — provenance labels
-  (artifact_now / memory / model_output) in assembled context;
-  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
-  (feedback from personal AI assistant)
-- Section K: add "Tool" column with example verification tools
-- standard.json / standard.yaml — machine-readable version
-- CLI tool maqs audit — automated checking of verifiable items;
-  --read-only / --external as the only permitted production mode
-- Write-before-read verification (MAQS_BASE, H-section candidate)
-- Regex input bound (MAQS_BASE, A-section candidate)
-- Edit-state verification E14 (MAQS_BASE; renumbered — E13 assigned to context key rendering, v1.7)
-- Context overflow guard (MAQS_BASE, observation only)
-- Type contract verification (MAQS_BASE)
-- Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
 
 ### Notes (v1.6)
 - Checklist items: 89 → 93 (added C8, I13, I14, I15)
