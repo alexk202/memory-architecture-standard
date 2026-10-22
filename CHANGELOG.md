@@ -6,6 +6,54 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Changed (external project re-audit, 2026-10)
+*Derived from a live external project re-audit case: baseline audit
+followed by remediation and re-audit against the same standard version
+and item set. Each extension passed admission criteria
+(docs/ADMISSION_CRITERIA.md): architecturally general, memory-specific,
+not already covered at stated scope, verifiable, with measured lineage
+from the re-audit delta. Attribution: internal review and approval by the
+project owner.*
+
+**Extensions (4):**
+- **I10** expanded: warnings in [CRIT] zones are scored as failures
+  unless explicitly resolved; this extends to test runs — a warning
+  count > 0 in critical zones is a test failure. Lineage: green test
+  run with unresolved warnings in critical zones passed as "green" in
+  baseline audit; re-audit scored it as failure.
+- **E6** expanded: provenance is required for all write channels,
+  including external sync, attachments, and plugin inputs. Lineage:
+  records entering memory through a sync channel bypassed provenance
+  validation that was enforced only on the primary input path.
+- **B4** expanded: atomicity covers all state writes, including append
+  operations and compound file+state pairs; partial atomicity does not
+  satisfy B4. Lineage: append-style writes to a state file were not
+  covered by the transactional wrapper that protected multi-store DB
+  writes; a crash between file write and state update left
+  inconsistent state.
+- **I13** expanded: masking must cover all output points through a
+  single mechanism; per-channel point fixes do not satisfy I13.
+  Lineage: secret masking applied in log output but not in error
+  messages routed through a separate channel; the same secret appeared
+  in both paths, masked in one.
+
+**Section 2.2 amendment:**
+- Step 6 added: separated criticality counting — summary formulations
+  must not merge failures ("no") and partial implementations
+  ("partial") into a single number. Required format: "N critical
+  failures (of which M in the 'partial' category) + P [CRIT]-tagged
+  items with a 'partial' verdict, without double counting." Per-section
+  codes must reconcile to the totals without intersections; reader
+  reproducibility is mandatory. See `docs/AUDIT_GUIDE.md`.
+
+**New documentation:**
+- `docs/AUDIT_GUIDE.md` — audit procedure: units of comparison,
+  standard delivery isolation, warnings and test runs, report format,
+  publication modes (aggregate / full analysis / silence), responsible
+  disclosure protocol, case register.
+- `examples/` — aggregate and full analysis mode templates
+  (structure defined; content added per case).
+
 ### Backlog (pending)
 
 - MAQS_BASE Stage 7: review of staged needs_review clusters
