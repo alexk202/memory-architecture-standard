@@ -36,6 +36,14 @@ project owner.*
   Lineage: secret masking applied in log output but not in error
   messages routed through a separate channel; the same secret appeared
   in both paths, masked in one.
+  Re-audit amendment (2026-10-23): output points include loggers owned
+  by dependencies (HTTP clients, SDKs, drivers) that write secrets
+  before application code runs; redaction installed at the handler
+  level is the single mechanism that covers them; masking at
+  application call sites does not satisfy I13 for this class.
+  Additional lineage: bot token in every polling log line (15+30 rows
+  persisted), written by the HTTP client's own logger, not by
+  application code.
 
 **Section 2.2 amendment:**
 - Step 6 added: separated criticality counting — summary formulations
@@ -53,6 +61,105 @@ project owner.*
   disclosure protocol, case register.
 - `examples/` — aggregate and full analysis mode templates
   (structure defined; content added per case).
+
+### Changed (live assistant memory system re-audit, 2026-10-23)
+*Derived from external re-audit of one live assistant memory system:
+baseline audit → verification of a 22-commit remediation session →
+full 96-item pass → 34-fix wave (233→320 passed). All candidates passed
+admission criteria (docs/ADMISSION_CRITERIA.md); all classified as
+extensions (litmus §6: existing wording vague enough to miss in practice).
+Checklist unchanged: 96. Attribution: agent execution with internal
+review and approval by the project owner.*
+*Transparency: 6 candidates (J7, I17, J8, I18, C9, 0.9) rejected or
+deferred per admission criteria — classification instead of growth.*
+*Tagging: worst-case principle — a defect that masks a potentially
+critical problem inherits its level; an invisible critical defect is
+worse than a visible one. All 7 extensions tagged [CRIT].*
+
+**Extensions (7):**
+
+*Evidence quality:*
+- **J3** expanded: "executed" = verdict delivered to the scoring channel
+  and cannot be silently ignored — (a) exactly ONE verdict channel
+  (a dual runner where each side ignores the other's result = false
+  green); (b) deterministic — no races with background workers and no
+  side-effects on shared process state (event loop, global registries);
+  (c) guard operates on schema/state produced by the real migration
+  path (hand-made fixtures drift from production stores); (d) guard
+  asserts behavior, not source text (`assert THRESHOLD == 5` is
+  constant-checking — documentation, not a test). Lineage: 4 masked
+  failures under a dual-runner bool protocol; green-by-scheduling
+  cooldown guard; 3 fixtures drifted from the migrated schema. Live
+  lineage: green source-guard while the gate was dead — service down
+  ~30 min, TypeError on every update (type-incompatible control
+  registration); a behavioral guard closed the shared event loop
+  (`asyncio.run()`) → 8 order-dependent failures. [CRIT]
+- **0.5a** expanded: production call site is not enough — a control
+  must be ABLE TO FIRE under production configuration: trigger
+  conditions must reference state that exists in production (columns,
+  tables, flags, platform capabilities). An invoked-but-unsatisfiable
+  control (phantom schema, silently absent platform dependency) is
+  the same false safety signal as dead code. Verification: negative
+  live probe or trace of trigger conditions against production state.
+  Lineage: phantom schema columns; platform-inert escalation gate
+  (`date -d`, silently empty off GNU); dead API methods behind live
+  routes; UNIQUE index existing only in the live DB (not created by
+  code). Live lineage: 5th mechanism — control registered in the
+  chain, invoked on every update, physically unable to fire once
+  (library-version incompatibility). [CRIT]
+- **J2** expanded: the after-measurement is a reproducible artifact
+  (run output, counter, diff), not an assertion; every claim in a
+  remediation report is either evidence-linked or explicitly marked
+  unverified. "Verified" = "reproduced", not "should work". Lineage:
+  "233 passed, 0 warnings" claimed with a live DeprecationWarning in
+  the same run; "8/10 [CRIT] fixed" vs 2 false claims + 1 regression
+  found by independent re-verification. [CRIT]
+
+*State integrity:*
+- **I3** expanded: store verification must control sidecar/derived
+  recovery state (write-ahead logs, shared-memory maps, replica
+  caches): a broken primary reads as healthy while a sidecar replays
+  old state; a check performed in the presence of foreign sidecars
+  is not a check. Lineage: corrupted primary read as healthy via
+  WAL replay. [CRIT]
+- **C1** expanded: diagnostic artifacts about memory (context
+  snapshots, self-report dumps, diagnostic exchanges) are stores for
+  growth-map purposes (per Glossary Store definition): retention
+  policy, size caps, isolation from test records. Lineage: 443-row
+  append-only snapshot without rotation or cap; 239 test rows mixed
+  with 204 live. [CRIT]
+
+*Configuration:*
+- **0.5** expanded: "code" includes configuration — multiple sources
+  of one parameter with a launch-path-dependent winner (env load
+  order, export semantics) are divergent parallel versions; the
+  winner must be deterministic and unique. Divergence between sources
+  is a 0.5 finding for parameters affecting behavior (flags, store
+  paths), even if both values are individually valid. Lineage:
+  behavioral flag true/false split across two .env files (winner
+  depended on launch method); DB_PATH defaults split across 7
+  modules (dead vs live store). [CRIT]
+
+*Security:*
+- **E7** expanded: marker/keyword filtering must operate on a
+  normalized form (Unicode NFC/NFKC + lookalike folding): filtering
+  the raw string passes homoglyph/digit bypass variants; a filter
+  that passes a normalization variant of a protected marker does not
+  satisfy E7. Lineage: homoglyph/digit-variant instruction ("0" for
+  "и") bypasses a literal-match sanitizer. [CRIT]
+
+**Routing litmus (J3 vs 0.5a; one live incident legitimately supports
+both — distinct defect classes, §2.5):**
+- J3: "Remove the behavioral check, keep the source scan — does the
+  evidence survive?" No → J3 not met.
+- 0.5a: "Enable the control in production configuration — can it
+  fire at least once?" No → 0.5a not met.
+
+**H5 lineage note (not an extension — filesystem covered by v1.4
+wording):** isolation guards must enumerate ALL live files
+(idempotency journals, diagnostics, uploads), not only databases.
+Lineage: test update_id written to live processed_updates.jsonl;
+conftest guard covered only DB paths.
 
 ### Backlog (pending)
 
