@@ -61,6 +61,12 @@ project owner.*
   disclosure protocol, case register.
 - `examples/` — aggregate and full analysis mode templates
   (structure defined; content added per case).
+- `docs/patterns/TEST_EVIDENCE_PATTERNS.md` — 9 test-evidence patterns
+  (one verdict channel, determinism isolation, fixtures via migration
+  path, anti-phantom contracts, negative fixtures, fail-closed probes,
+  conftest redirect, source-guard + behavioral twin, subprocess probes)
+  — non-normative companion; MAQS classifies what to prove, patterns
+  show how. Includes TR39 skeleton note pinned for E7.
 
 ### Changed (live assistant memory system re-audit, 2026-10-23)
 *Derived from external re-audit of one live assistant memory system:
