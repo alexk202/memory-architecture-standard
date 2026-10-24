@@ -49,7 +49,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 3. Work through sections A–K, marking each item: `yes` / `partial` / `no` / `n/a`
 4. For each failure, record evidence (file, line, SQL query, log entry)
 5. Use the **Verdict Protocol** at the end to assess pass/fail
-6. Record the results in the [audit report template](examples/AUDIT_REPORT_TEMPLATE.md) — see also a [completed real-world audit report](examples/AUDIT_REPORT_2026-09-01_klodik.md) and an [anonymized re-audit aggregate](examples/EXAMPLE_REAUDIT_AGGREGATE_v1.6_2026-10-22.md)
+6. Record the results in the [audit report template](examples/AUDIT_REPORT_TEMPLATE.md) — see also a [completed real-world audit report (anonymized)](examples/AUDIT_REPORT_2026-09-01.md) and an [anonymized re-audit aggregate](examples/EXAMPLE_REAUDIT_AGGREGATE_v1.6_2026-10-22.md)
 
 ## The Standard at a Glance
 
