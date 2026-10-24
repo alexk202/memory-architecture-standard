@@ -19,6 +19,8 @@
 | **Decay** | Gradual reduction of a memory entry's importance score over time, typically exponential (e.g., Ebbinghaus curve) |
 | **Bridge** | A controlled injection point connecting two isolated memory stores; the only permitted path for cross-store data flow |
 | **Guardian** | A system-level orchestrator responsible for starting, stopping, monitoring, and diagnosing all assistant processes |
+| **Static implementation evidence** | A verdict based on reading the code with file:line references: the mechanism is present and wired in the inspected version. It makes no claim about runtime behavior. |
+| **Behavioral verification pending** | The behavioral check for an item is defined (for example, an attempted violation that must fail) but has not been run. Any future result must name the tested version and setup; it is not a general certification of the system. |
 
 ---
 

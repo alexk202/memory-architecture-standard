@@ -6,6 +6,26 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Added (glossary, 2026-10-24)
+*Two verdict-reclassification terms added to the Glossary (STANDARD.md),
+formalizing the P4 relabel precedent: source — external reviewer feedback
+(attribution withheld by request), linked to maqs-way 469e237 (audit doc
+reclassification) and the mem0/letta audit relabels. The terms separate
+"what code reading proves" from "what running a defined check would prove":
+a static-reading audit may credit implementation evidence (file:line
+references) but must not imply behavioral results; a defined-but-not-run
+behavioral check is explicitly pending, and any future result must name the
+tested version and setup. Both terms enter the next release with the
+owner's signature per the release sync checklist.*
+
+- **Static implementation evidence** — a verdict based on reading the code
+  with file:line references: the mechanism is present and wired in the
+  inspected version. It makes no claim about runtime behavior.
+- **Behavioral verification pending** — the behavioral check for an item
+  is defined (for example, an attempted violation that must fail) but has
+  not been run. Any future result must name the tested version and setup;
+  it is not a general certification of the system.
+
 ### Changed (external project re-audit, 2026-10)
 *Derived from a live external project re-audit case: baseline audit
 followed by remediation and re-audit against the same standard version
