@@ -4,6 +4,15 @@ Thank you for your interest in improving the Memory Architecture Quality Standar
 
 ## How to Contribute
 
+### One-Time Setup After Cloning
+
+Activate the name-policy git hooks (the scripts are tracked in `.githooks/`, but the
+path setting is local to each clone):
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ### New Checklist Items
 
 Every item in the standard must be **backed by a real incident**. Every candidate must also pass the admission gate ([docs/ADMISSION_CRITERIA.md](docs/ADMISSION_CRITERIA.md), section 2) and the release sync checklist (section 9) before merge. To propose a new item:
