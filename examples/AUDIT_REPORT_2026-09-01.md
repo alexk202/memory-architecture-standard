@@ -1,10 +1,12 @@
-# Audit Report — Klodik
+# Audit Report — Project Y (anonymized)
 
 **Standard version:** MAQS v1.2 (audits of 2026-08-31 / 2026-09-01) — report formatted per Standard v1.3 (2026-09-08)
 **Audit date:** 2026-08-31 (primary audit) / 2026-09-01 (re-audit after waves 0–8)
-**System:** Klodik — Telegram assistant (`claude_enhanced.py` + `memory_core` + `utils`), repository `/home/aleksandr/Assistant/Клодик`
+**System:** Project Y — Telegram assistant (`claude_enhanced.py` + `memory_core` + `utils`), local repository (path withheld)
 **Auditor:** Claude (agent) — method: Serena (symbolic analysis) + SQL inventory + test runs + context-assembly snapshot + static analysis of start/stop scripts
 **Controller:** Aleksandr Kossarev
+
+> **Anonymized (2026-10-24).** Published per the public-repository name policy: the system and repository names are withheld (Project Y), mirroring the anonymized re-audit aggregate example. Technical content unchanged.
 
 > **About the template.** The audit was conducted against MAQS v1.2 (80 items: 0 = 7, D = 8; preparation P1–P7). The tables below are aligned with Standard v1.3 (82 items: 0.5a [CRIT] and D9 [IMP] added, step P8 added); the retrospective projection of the new items onto the v1.2-era audit is listed separately (see "Mapping to v1.3").
 
@@ -14,7 +16,7 @@
 2026-09-01 — re-audit per Rule 3 (full pass) → verdict **CONFORMS**
 2026-09-01…15 — post-audit activities (live run, Guardian_Rust incident, I7)
 
-**Primary documents (Klodik repository, in Russian):**
+**Primary documents (audited repository, in Russian):**
 `docs/AUDIT_2026-08-31_protocol.md`, `docs/AUDIT_2026-08-31_roadmap.md`, `docs/AUDIT_2026-09-01_recheck.md`
 
 ---
@@ -226,9 +228,9 @@ Implementation rule (§2.3): one wave = one logical change per observation inter
 
 **Live run (2026-09-01, after the re-audit).** The bot was started via Guardian and works; start/stop verified live through both Guardians (Python and Rust): honest verdicts, graceful stop "Bot stopped" without SIGKILL; diary snapshot `0df3ddb`.
 
-**Guardian_Rust incident (2026-09-01).** Missing `sqlite3` in PATH broke startup checks; false "running/foreign PID" reports came from `discover_pids(workdir)` inside the Guardians themselves (patched outside the Klodik repository, with the owner's consent). Fixed: `db_query` via `python3` + `/proc/cmdline` verification before kill by pid-file (`a969430`). Classification in the spirit of P8: a runtime-environment defect, not a memory-architecture defect.
+**Guardian_Rust incident (2026-09-01).** Missing `sqlite3` in PATH broke startup checks; false "running/foreign PID" reports came from `discover_pids(workdir)` inside the Guardians themselves (patched outside the audited repository, with the owner's consent). Fixed: `db_query` via `python3` + `/proc/cmdline` verification before kill by pid-file (`a969430`). Classification in the spirit of P8: a runtime-environment defect, not a memory-architecture defect.
 
-**Live threshold calibration (D6 in practice).** Semantic threshold 0.55→0.65 per Klodik's live feedback (`faae6ac`, env `MEM_SEMANTIC_THRESHOLD`) — externalized configuration in action.
+**Live threshold calibration (D6 in practice).** Semantic threshold 0.55→0.65 per the assistant's live feedback (`faae6ac`, env `MEM_SEMANTIC_THRESHOLD`) — externalized configuration in action.
 
 **I7 [REC] — closed by practice.** A diagnostic dialog was held live on 2026-09-01 (recorded in the re-audit) and repeated per the full three-tier protocol on 2026-09-15 (`docs/Dignostic_dialog.md`, 293 lines: context self-assessment 8/10, overlap of near-duplicate concepts `Compass_song`/`Compass` found, memory timestamps confirmed).
 
@@ -245,6 +247,6 @@ Implementation rule (§2.3): one wave = one logical change per observation inter
 
 ---
 
-*Sources: `docs/AUDIT_2026-08-31_protocol.md`, `docs/AUDIT_2026-08-31_roadmap.md`, `docs/AUDIT_2026-09-01_recheck.md` (Klodik repository, in Russian); Standard MAQS v1.3. Report compiled 2026-09-17 covering all waves of the audit from the primary pass through the re-audit.*
+*Sources: `docs/AUDIT_2026-08-31_protocol.md`, `docs/AUDIT_2026-08-31_roadmap.md`, `docs/AUDIT_2026-09-01_recheck.md` (audited repository, in Russian); Standard MAQS v1.3. Report compiled 2026-09-17 covering all waves of the audit from the primary pass through the re-audit.*
 
 *Generated using MAQS v1.3 Audit Report Template*
