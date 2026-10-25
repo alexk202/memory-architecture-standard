@@ -56,7 +56,16 @@ project owner.*
   periodic manual check. A green suite without an in-runner guard is not
   evidence of isolation.
   Lineage: a test ran against live stores for 54 days across at least
-  three green runs.
+  three green runs. Second case — the standard author's own project
+  (2026-10-25): a guard built to this extension (live roots snapshotted
+  before every runner, re-verified after, any divergence fails the run)
+  found in its first full guarded run that every test had been writing
+  its conversations into the live memory history store and reading a
+  10-message tail of previous tests back into every extraction prompt —
+  14.8% of stored facts contaminated, invisible for nine days while
+  every headline metric stayed healthy; the isolated re-measurement left
+  R@5 = 1.000, so it was the guard, not the green history, that surfaced
+  the leak.
 - **I9** expanded: the log write path has a single active writer across
   process starts. The launch wrapper appends, never truncates: truncation
   at every start destroys the previous session's incident evidence and
