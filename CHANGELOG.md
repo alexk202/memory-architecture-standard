@@ -26,6 +26,84 @@ owner's signature per the release sync checklist.*
   not been run. Any future result must name the tested version and setup;
   it is not a general certification of the system.
 
+### Changed (local assistant re-audit, 2026-10-24)
+*Derived from a live local-assistant audit against v1.7 and its remediation.
+Each extension passed admission criteria (docs/ADMISSION_CRITERIA.md) with
+measured lineage. Editorial rule applied: each extension names a failure
+mechanism, not an episode; draws a boundary, not a list; is verifiable by
+procedure or observation. Attribution: internal review and approval by the
+project owner.*
+
+**Extensions (6):**
+
+- **A2 / I13** expanded: masking is verified against secrets adjacent to
+  other characters in any context, not only free-standing tokens (e.g.,
+  a token inside a URL path after an identifier). A masking suite whose
+  fixtures contain only free-standing secrets can pass green while
+  production forms leak.
+  Lineage: a bot token leaked into a live log for a year while masking
+  tests were green; the pattern's leading boundary anchor did not match
+  the prefix-glued form; found when an embedded-form fixture failed.
+- **E7** expanded: the set of code-generated render markers must be
+  reconcilable mechanically — every marker the renderer emits appears in
+  the imitation filter's inventory. Drift (a marker entering the renderer
+  without entering the filter) is an E7 failure, verified by diffing the
+  two lists, not by auditor recall.
+  Lineage: 3 markers unprotected for weeks; 6 more added during
+  remediation, each requiring a manual filter update.
+- **H5** expanded: the before/after isolation guard executes on every
+  suite run, integrated into the test runner's session hooks, not as a
+  periodic manual check. A green suite without an in-runner guard is not
+  evidence of isolation.
+  Lineage: a test ran against live stores for 54 days across at least
+  three green runs.
+- **I9** expanded: the log write path has a single active writer across
+  process starts. The launch wrapper appends, never truncates: truncation
+  at every start destroys the previous session's incident evidence and
+  silently defeats size-based rotation. (Example of the same mechanism:
+  a second handler writing to the same file doubles every record.)
+  Lineage: truncation at every start erased the previous session,
+  including leak evidence; rotation never fired in a year.
+- **§2.2.3 (audit methodology)** expanded: evidence must establish
+  reachability of the claimed defect, not only presence of a pattern —
+  gate conditions (flags, callers, enclosing scopes, per-instance schema)
+  are part of the evidence. A pattern that exists but is unreachable is
+  not a failure. Schema and key claims are verified per instance (catalog
+  query), not inferred from naming. A verdict based on reading alone is
+  labeled "static implementation evidence" (see Glossary). A verdict later
+  found false is corrected in the same report, with the disproving check
+  attached.
+  Lineage: two false verdicts in one audit (schema inferred from naming;
+  pattern found but gates not traced), both corrected in the report.
+- **A3** expanded: service and operational events (startup/shutdown
+  markers, health snapshots) are not written into user memory stores
+  under synthetic scope keys. Where legacy records exist, they are typed
+  and invisible to every retrieval reader, including cross-scope scans.
+  Lineage: 13 of 15 "dialogs" in the memory store were shutdown markers,
+  creating phantom scopes in cross-dialog recall.
+
+**Markup (planned for release, no change in meaning):**
+- SUPP-EXT-01 to be shown as a recommendation without a checkbox, under
+  a note "Not checklist items and not counted in the 96 (category SUPP,
+  docs/ADMISSION_CRITERIA.md)"; the Supplementary section moves from
+  between I and J to after J, before K. Mechanical count of checklist
+  items = 96, matching README badge, text and table.
+
+**Backlog (not included):**
+- D1: punctuation normalization in lexical gate tokenization — awaits
+  product lineage per §2.5; no development-lineage exception.
+- docs/VERIFICATION_QUERIES.md — on live WAL databases the before/after
+  isolation guard compares rows/content, not the file md5 (a checkpoint
+  changes the hash at zero row delta, producing a false failure signal).
+
+**Docs (one line each):**
+- `docs/patterns/TEST_EVIDENCE_PATTERNS.md` — pattern №10
+  "error-vs-empty discriminator": a negative fixture injects an error into
+  the source to prove an empty result comes from matching, not from a
+  swallowed exception.
+- docs/VERIFICATION_QUERIES.md WAL note staged to Backlog (file does not
+  exist yet).
+
 ### Changed (external project re-audit, 2026-10)
 *Derived from a live external project re-audit case: baseline audit
 followed by remediation and re-audit against the same standard version

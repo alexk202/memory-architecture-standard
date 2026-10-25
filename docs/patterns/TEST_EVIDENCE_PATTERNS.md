@@ -4,7 +4,7 @@
 guard test actually proves what it claims. MAQS is a classification standard —
 it says **what** must be proven (J3: guard test executed and enforced;
 0.5a: control able to fire; J2: verified = reproduced), not **how**. This
-catalog is the "how": nine patterns, each derived from a measured incident
+catalog is the "how": ten patterns, each derived from a measured incident
 and kept out of the checklist deliberately (§1 scope anchor:
 an implementation pattern catalog is not MAQS).
 
@@ -136,6 +136,23 @@ are unobservable inside an already-loaded process.
 environment; the subprocess exit code/output is the evidence.
 
 **Supports:** 0.5 · **Lineage:** 45dbcdb
+
+---
+
+## 10. Error-vs-empty discriminator
+
+An empty result from a negative fixture is ambiguous: it may prove that
+the matcher rejects the input, or that an exception was swallowed
+upstream and the query never ran. A green "returned empty" cannot
+distinguish the two.
+
+**Pattern:** inject a deliberate error into the source the fixture reads
+from (a fixture/query that must raise) and assert the suite reports
+failure. Only after this proof does "returned empty" mean "rejected by
+matching" — an empty produced by a swallowed exception is a false green.
+
+**Supports:** G1 (v1.4), J3 · **Lineage:** anonymized local-assistant
+session (2026-10-24)
 
 ---
 
