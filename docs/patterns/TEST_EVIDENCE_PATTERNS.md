@@ -151,7 +151,7 @@ from (a fixture/query that must raise) and assert the suite reports
 failure. Only after this proof does "returned empty" mean "rejected by
 matching" — an empty produced by a swallowed exception is a false green.
 
-**Supports:** G1 (v1.4), J3 · **Lineage:** anonymized local-assistant
+**Supports:** G1 (v1.4), G3, J3 · **Lineage:** anonymized local-assistant
 session (2026-10-24)
 
 ---
