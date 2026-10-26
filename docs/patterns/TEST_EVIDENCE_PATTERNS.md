@@ -166,3 +166,31 @@ auditors will filter differently.
 
 **Status:** implementation note, not a checklist item; E7 requires
 "normalized form + lookalike folding" and this pins the reference algorithm.
+## 11. Native isolation available but not enabled (CANDIDATE — not canonized; logged 2026-10-26, line of 2026-10-25)
+
+A system may ship a native mechanism that would have prevented an incident,
+while the integration leaves it off. The test suite must treat "the library
+had the knob" as NEITHER a defense NOR an accusation — and the incident
+lineage must record that the mechanism existed but was not in the exercised
+path. Pattern shape: (a) document which native isolation knobs exist at each
+layer (scope keys, per-call ids, redirection hooks); (b) the behavioral test
+EXERCISES the integration as shipped (knob off), reproducing the incident
+class when possible; (c) a demonstration pass flips the native knob on and
+measures whether the incident class disappears — as a measurement, not a
+verdict about the library; (d) the guard that finally protects the integration
+is owned by the integration (the incident stays in its lineage regardless of
+the library's native options).
+
+Lineage: 2026-10-25 — mem0@0724291b keys its messages/history scope by the
+sorted `user_id&run_id` pair; a per-question `run_id` natively isolates the
+cross-session history tail (measured by the P4 incident demo: the q2 scope
+holds only its own rows, zero leaked from q1). The eval integration ran
+without it for nine days (14.8% of stored facts contaminated on the
+single-156 line), discovered the channel via its own H5 guard
+(`evals/results/g1iso_a_note.md`), isolated per-question by an explicit
+history-DB redirect, and only then measured the native knob
+(`evals/results/p4_mem0_isolation_report.json`). The H5 guard stays with the
+integration; the native knob is a candidate complement, not a replacement.
+
+Not a checklist item for 1.8; canonization via the usual pattern admission
+route if the Council adopts it.

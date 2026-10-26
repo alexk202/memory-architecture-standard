@@ -6,6 +6,8 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+- Test-evidence pattern candidate №11 "native isolation available but not enabled" logged in docs/patterns/TEST_EVIDENCE_PATTERNS.md (2026-10-25 mem0 run_id line: the native per-question history isolation was measured by the P4 incident demo AFTER the integration's own H5 guard had found the channel; candidate only, not in 1.8).
+
 ### Added (glossary, 2026-10-24)
 *Two verdict-reclassification terms added to the Glossary (STANDARD.md),
 formalizing the P4 relabel precedent: source — external reviewer feedback
