@@ -99,6 +99,10 @@ project owner.*
   docs/ADMISSION_CRITERIA.md)"; the Supplementary section moves from
   between I and J to after J, before K. Mechanical count of checklist
   items = 96, matching README badge, text and table.
+- Audit report template (examples/AUDIT_REPORT_TEMPLATE.md): per-section
+  item counts synced with STANDARD.md (0: 9 -> 10, E: 12 -> 13); the
+  template had lagged behind recent releases. No change in meaning; item
+  count unchanged (96).
 
 **Backlog (not included):**
 - D1: punctuation normalization in lexical gate tokenization — awaits

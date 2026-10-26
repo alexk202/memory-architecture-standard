@@ -37,12 +37,12 @@ Footer: *Generated using MAQS v1.6*
 
 | Section | Items | Yes | Partial | No | N/A | Failed [CRIT] |
 |---------|-------|-----|---------|----|-----|----------------|
-| 0. System Map | 9 | | | | | |
+| 0. System Map | 10 | | | | | |
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
 | C. Growth Management | 8 | | | | | |
 | D. Retrieval | 9 | | | | | |
-| E. Context Assembly | 12 | | | | | |
+| E. Context Assembly | 13 | | | | | |
 | F. Feedback Loop | 8 | | | | | |
 | G. Isolation | 7 | | | | | |
 | H. Concurrency | 6 | | | | | |
