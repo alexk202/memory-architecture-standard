@@ -23,6 +23,7 @@
 - [ ] P8: Runtime environment recorded (uptime, last OS/package updates)
 - [ ] P9: Controlled artifact experiment (if applicable)
 - [ ] P10: External auditor isolation confirmed
+- [ ] P11: Agent audit discipline confirmed — no invocations of write-side-effect methods on live stores (even semantically "read"/"query" methods); diagnostic probes on file-level copies; any exception requires pre/post counter verification
 
 ## Baseline Metrics
 

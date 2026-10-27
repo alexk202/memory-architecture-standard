@@ -15,7 +15,10 @@ Standard resolution (first match wins):
 
 Hard checks (exit 1 on any failure):
   R1 coverage     every checklist item of STANDARD.md has exactly one verdict row;
-                  no unknown item ids.
+                  no unknown item ids. Rows with an empty verdict cell (the
+                  template's pre-filled rows) are reported under a separate
+                  message ("a verdict row but an empty verdict cell"); the
+                  empty template stays RED either way.
   R2 crit-list    the declared [CRIT] failure list equals the computed one
                   (verdict partial/no on an item marked [CRIT] in STANDARD.md).
                   J3 inherited criticality (v1.8.1): a failing J3 row naming a
@@ -82,6 +85,7 @@ PROTO_RE = re.compile(
     r"\s*(?P<no>\d+)\s*\|\s*(?P<na>\d+)\s*\|\s*(?P<crit>\d+)"
 )
 ID_TOKEN_RE = re.compile(r"\b((?:\d+\.\d+[a-z]?)|(?:[A-J]\d{1,2}))\b")
+ROW_PRESENCE_RE = re.compile(r"^\|\s*\*\*(?P<id>(?:\d+\.\d+[a-z]?)|(?:[A-J]\d+)|(?:SUPP-[A-Z]+-\d+))\*\*")
 CHECKBOX_RE = re.compile(
     r"^[-*]\s*\[([ xX])\]\s*\*\*(?P<label>DOES NOT PASS|PASSES WITH CAVEATS|CONFORMS)\*\*",
     re.IGNORECASE | re.MULTILINE,
@@ -209,12 +213,30 @@ def check(report_text: str, standard_text: str) -> dict:
     j3_failing = v.get("J3") in FAILING
     j3_inherited = j3_failing and any(std.get(g) == "CRIT" for g in guarded)
 
-    # R1 coverage
-    missing = [i for i in std if i not in verdicts]
+    # R1 coverage. Verdict rows are scanned globally (old-format reports carry
+    # per-item rows in their own section tables); rows that merely name an item
+    # with an empty verdict cell are recognized only inside the template's
+    # "Item Verdicts" block, so Critical/Important table rows never mask a
+    # missing verdict row. The two R1 messages are separate: "without a verdict
+    # row" vs "a verdict row but an empty verdict cell" (the empty template
+    # stays RED either way).
+    iv_block = block_after(report_text, r"^#{1,3}\s*Item\s+Verdicts\b")
+    present: set[str] = set()
+    empty_verdict: set[str] = set()
+    for line in iv_block.splitlines():
+        m = ROW_PRESENCE_RE.match(line.strip())
+        if m:
+            present.add(m.group("id"))
+            if not ROW_RE.match(line.strip()):
+                empty_verdict.add(m.group("id"))
+    missing = [i for i in std if i not in verdicts and i not in present]
+    empty_verdict_list = sorted((i for i in empty_verdict if i in std), key=_key)
     dup = [i for i, vs in verdicts.items() if len(vs) > 1]
-    unknown = [i for i in verdicts if i not in std and not i.upper().startswith("SUPP-")]
+    unknown = [i for i in present | set(verdicts) if i not in std and not i.upper().startswith("SUPP-")]
     if missing:
         hard.append(("R1", f"items without a verdict row: {', '.join(missing)}"))
+    if empty_verdict_list:
+        hard.append(("R1", f"items with a verdict row but an empty verdict cell: {', '.join(empty_verdict_list)}"))
     if dup:
         hard.append(("R1", f"items with more than one verdict row: {', '.join(dup)}"))
     if unknown:

@@ -42,6 +42,9 @@ gate has been through a live audit, owner decision.*
   <n> | not collected), per-item verdict rows (evidence-status column
   carrying the v1.7 glossary terms; dedicated guarded-item column for
   J3), protocol table computed from the rows, never hand-written.
+  Pre-Audit section: P11 step (Agent audit discipline) added per
+  STANDARD.md v1.8.1 — the template's P-list had lagged at P1–P10
+  since v1.7.
 - **docs/AUDIT_GUIDE.md §2.2** — two rules: criticality is copied
   verbatim from STANDARD.md of the audited version; the protocol is
   computed after the last verdict row (by the gate or the same rule by

@@ -1,5 +1,7 @@
 # Audit Report — Project Y (anonymized)
 
+> **Gate run 2026-10-27 against v1.2:** the report predates the template row format (R1); B4 is listed as a [CRIT] failure but is [IMP] in v1.2; the file carries two checked verdicts (primary audit DOES NOT PASS, re-audit CONFORMS). Kept as a historical example; see scripts/check_audit_report.py.
+
 **Standard version:** MAQS v1.2 (audits of 2026-08-31 / 2026-09-01) — report formatted per Standard v1.3 (2026-09-08)
 **Audit date:** 2026-08-31 (primary audit) / 2026-09-01 (re-audit after waves 0–8)
 **System:** Project Y — Telegram assistant (`claude_enhanced.py` + `memory_core` + `utils`), local repository (path withheld)

@@ -33,6 +33,7 @@ CASES = [
     ("red_r1_missing.md",        STD, 1, {"R1"}, set()),
     ("red_r1_dup.md",            STD, 1, {"R1"}, set()),
     ("red_r1_unknown.md",        STD, 1, {"R1"}, set()),
+    ("red_r1_empty_verdict.md",  STD, 1, {"R1"}, set()),
     ("red_r2_inflation.md",      STD, 1, {"R2"}, set()),
     ("red_r2_omission.md",       STD, 1, {"R2"}, set()),
     ("red_r3.md",                STD, 1, {"R3"}, set()),
