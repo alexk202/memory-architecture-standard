@@ -27,6 +27,8 @@ itself (`STANDARD.md`).
 
 ## 2. Standard Delivery Isolation
 
+### 2.1. Isolation rules
+
 - Standard rules must not be delivered in the same context as
   feature-level task specifications. The audit cycle is a separate
   run with its own unit of comparison.
@@ -37,6 +39,19 @@ itself (`STANDARD.md`).
 - A **re-audit against the baseline map** is a mandatory checkpoint
   before a release is published. A release without re-audit is itself
   a finding.
+
+### 2.2. Criticality and protocol discipline
+
+- **Criticality is copied, never assigned.** The marker for every item
+  is taken verbatim from `STANDARD.md` of the version being audited
+  (`--standard-version <tag>` in `scripts/check_audit_report.py`, or the
+  report's "Standard version" field). An auditor-assigned level is a
+  finding (gate check R2).
+- **The protocol is computed, never written.** The Audit Result Protocol
+  is derived from the per-item verdict rows after the last row is final —
+  by `scripts/check_audit_report.py` or by the same rule by hand.
+  Per-section codes must reconcile to the totals without intersections
+  (section 4).
 
 ---
 

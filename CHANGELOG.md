@@ -6,6 +6,67 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Added (audit-report consistency gate, 2026-10-27)
+
+*Incident: an agent-run static audit of an external project (2026-10-26,
+against v1.7, reviewed the same day): the final verdict happened to be
+correct while nearly everything supporting it was wrong — criticality
+assigned by the auditor, not taken from the standard (4 items inflated
+to [CRIT]: A6, C6, F8 are [IMP], E10 is [REC]; 14 actual [CRIT] failures
+missing from the list), the protocol written separately from the rows
+(6 of 11 sections wrong), no audited version (snapshot without .git),
+"Warnings: 0" without a run, sections declared CONFORMING while holding
+[IMP] failures. Procedural failures — mechanically catchable, so now
+caught by a gate. Package goes to [Unreleased]; no release until the
+gate has been through a live audit, owner decision.*
+
+- **scripts/check_audit_report.py** — audit-report consistency gate
+  (stdlib only, read-only, exit 0/1). Hard: R1 coverage (exactly one
+  verdict row per checklist item, no unknown ids), R2 declared [CRIT]
+  list = computed, R3 protocol counts = per-item rows, R4 overall
+  verdict, R5 provenance. Soft (fail only under --strict): S1
+  evidence-status marking, S2 "Warnings: 0" in a static audit, S3
+  section claims vs failures. Standard resolution: --standard-version
+  <tag> → `git show <tag>:STANDARD.md`; without the flag — the report's
+  "Standard version" field; no flag and no field → hard R5 (coverage
+  checks skipped). R4 reads the checked verdict line ([x]; zero or more
+  than one checked → hard R4). J3 inherited criticality (v1.8.1): a
+  failing J3 row naming a [CRIT] guarded item is scored [CRIT] in R2/R4
+  and in the per-section [CRIT] counts — the same rule everywhere, so
+  per-section codes reconcile with the list (§2.2 step 6). The gate
+  checks consistency, not correctness: a wrong "yes" with a consistent
+  protocol stays green — the reviewer's job.
+- **examples/AUDIT_REPORT_TEMPLATE.md** — header fields (Standard
+  version; Audited version: SHA | no-SHA with reason and
+  reconstruction; Audit type: static | behavioral | mixed; Warnings:
+  <n> | not collected), per-item verdict rows (evidence-status column
+  carrying the v1.7 glossary terms; dedicated guarded-item column for
+  J3), protocol table computed from the rows, never hand-written.
+- **docs/AUDIT_GUIDE.md §2.2** — two rules: criticality is copied
+  verbatim from STANDARD.md of the audited version; the protocol is
+  computed after the last verdict row (by the gate or the same rule by
+  hand).
+- **tests/audit_report/** — synthetic vectors + runner (20 runs): GREEN
+  all-yes; GREEN mixed with correct protocol; GREEN J3-[CRIT]-guard
+  applied correctly; RED one per class — R1 missing/dup/unknown, R2
+  inflation/omission, R3, R4 wrong-verdict/zero-checked/all-three, R5,
+  S1–S3 (default + --strict), J3 inheritance. The external-project
+  report is deliberately NOT committed.
+- docs/proposals/PROPOSAL_audit_report_gate.md — the proposal
+  (incident anonymized per the name policy).
+- Gate run on examples/AUDIT_REPORT_2026-09-01.md against v1.2
+  (--standard-version v1.2): GATE RED, recorded as-is — R1: all 80
+  items lack gate-format verdict rows; R2: the declared [CRIT] list
+  names B4, which is [IMP] in v1.2, and 15 more items whose verdicts
+  are not machine-readable in that report; R3: all 11 section rows
+  mismatch; R4: two checked verdict lines (the file carries the
+  2026-08-31 primary verdict and the 2026-09-01 re-audit verdict); R5:
+  no commit SHA and no no-SHA statement; soft S1. Expected: the report
+  predates the gate's report format; the historical report unchanged.
+
+Checklist unchanged (96). No release: the gate ships to [Unreleased]
+until it has been through a live audit (owner decision).
+
 ### Backlog (pending)
 
 - MAQS_BASE Stage 7: review of staged needs_review clusters
