@@ -1,1 +1,2 @@
-.serena/
+.serena/__pycache__/
+*.pyc
