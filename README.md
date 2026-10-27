@@ -2,7 +2,7 @@
 
 **A practical audit checklist for LLM-based systems with persistent memory.**
 
-[![Version](https://img.shields.io/badge/version-1.7-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.8-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
 [![Items](https://img.shields.io/badge/checklist-96_items-orange.svg)]
 
@@ -100,6 +100,8 @@ Post-audit: remediation via roadmap, one wave at a time, with commits and status
 ## Documentation
 
 - [`docs/ADMISSION_CRITERIA.md`](docs/ADMISSION_CRITERIA.md) — admission gate for new checklist items
+- [`docs/AUDIT_GUIDE.md`](docs/AUDIT_GUIDE.md) — how to conduct, deliver, and report an audit (effective from v1.8)
+- [`docs/patterns/TEST_EVIDENCE_PATTERNS.md`](docs/patterns/TEST_EVIDENCE_PATTERNS.md) — non-normative test-evidence patterns: MAQS classifies what to prove, the patterns show how
 
 ## Companion Articles
 

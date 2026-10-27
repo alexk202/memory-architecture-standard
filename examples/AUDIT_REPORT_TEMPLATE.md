@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.6
+**Standard version:** MAQS v1.8
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Auditor:** [Name / Agent]
@@ -20,7 +20,7 @@
 - [ ] P8: Runtime environment recorded (uptime, last OS/package updates)
 - [ ] P9: Controlled artifact experiment (if applicable)
 - [ ] P10: External auditor isolation confirmed
-Footer: *Generated using MAQS v1.6*
+Footer: *Generated using MAQS v1.8*
 
 ## Baseline Metrics
 
@@ -95,4 +95,4 @@ Footer: *Generated using MAQS v1.6*
 
 ---
 
-*Generated using MAQS v1.5 Audit Report Template*
+*Generated using MAQS v1.8 Audit Report Template*

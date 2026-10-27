@@ -140,8 +140,9 @@ Candidate
 
 ## 5. Growth budget
 
-The standard had **74** items at v1.0, **93** at v1.6, and targets
-**96** at v1.7. Growth rate:
+The standard had **74** items at v1.0, **93** at v1.6, **96** at
+v1.7, and stays at **96** at v1.8 (extension release: expansions
+only, no new numbered items). Growth rate:
 
 | Release | Items | Δ | Source |
 |---|---|---|---|
@@ -153,6 +154,7 @@ The standard had **74** items at v1.0, **93** at v1.6, and targets
 | v1.5 | 89 | +5 | E12, F8, I11, I12, 0.6a |
 | v1.6 | 93 | +4 | C8, I13, I14, I15 (MAQS_BASE) |
 | v1.7 | 96 | +3 | 0.8, E13, I16 |
+| v1.8 | 96 | 0 | Extensions only (15 items expanded + §2.2 methodology; SUPP-EXT-01 reclassified as non-counted SUPP) |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per
