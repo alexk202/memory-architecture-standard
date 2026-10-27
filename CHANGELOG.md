@@ -40,7 +40,34 @@ All notable changes to the Memory Architecture Quality Standard.
 - D1: punctuation normalization in lexical gate tokenization — awaits
   product lineage per §2.5; no development-lineage exception.
 
+## [1.8.1] - 2026-10-27
+
+*Same-day criticality calibration against the §2.2 definitions;
+owner decision.*
+
+**Verdict-affecting changes relative to v1.7 (read with 1.8):**
+- C1, I3: raised [IMP] → [CRIT] (kept from 1.8).
+- J2: [IMP], as in v1.7 (1.8 had raised it to [CRIT]; reverted the
+  same day — evidence discipline, not a direct loss/leak/poisoning/
+  growth risk).
+- J3: [IMP] with inherited criticality — [CRIT] when the guarded
+  incident belongs to a [CRIT] item.
+
+An audit that was PASSES WITH CAVEATS under v1.7 may become DOES
+NOT PASS under v1.8.1 through C1, I3 or a J3 failure on a [CRIT]
+zone. Do not use v1.8 criticality for J2/J3; audit against v1.8.1.
+
+**Mirror sync (applied in 1.8, recorded here):** EN text of D8, I10,
+I12 brought in line with the RU mirror — content present only in RU
+since v1.6 (D8: axis parenthetical and the "15 of 15 incidents
+categorized on the wrong axis pair" note; I10: DEBUG-cap pre-filter
+before incident classification, 755 of ~7,000 weight; I12: B-axis
+pinned as B2 "visibility without reaction") ported to EN; EN remains
+canonical. Audits between v1.6 and v1.7 used the shorter EN wording.
+
 ## [1.8] - 2026-10-27
+
+Superseded the same day by 1.8.1 (criticality calibration of J2/J3).
 
 - Test-evidence pattern candidate №11 "native isolation available but not enabled" logged in docs/patterns/TEST_EVIDENCE_PATTERNS.md (2026-10-25 mem0 run_id line: the native per-question history isolation was measured by the P4 incident demo AFTER the integration's own H5 guard had found the channel; candidate only, not canonized in this release).
 

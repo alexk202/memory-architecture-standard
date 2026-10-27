@@ -155,6 +155,7 @@ only, no new numbered items). Growth rate:
 | v1.6 | 93 | +4 | C8, I13, I14, I15 (MAQS_BASE) |
 | v1.7 | 96 | +3 | 0.8, E13, I16 |
 | v1.8 | 96 | 0 | Extensions only (15 items expanded + §2.2 methodology; SUPP-EXT-01 reclassified as non-counted SUPP) |
+| v1.8.1 | 96 | 0 | criticality calibration |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per

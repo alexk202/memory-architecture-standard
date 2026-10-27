@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.8 (2026-10-27)
+**Version:** 1.8.1 (2026-10-27)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -113,6 +113,7 @@ Only after completing steps P1–P11 can the section-by-section audit begin.
    - **[CRIT]** — direct risk of loss, poisoning, leakage, or uncontrolled memory growth. Failure = blocker.
    - **[IMP]** — risk of silent quality and predictability degradation.
    - **[REC]** — maturity and maintainability.
+   - Inherited criticality: an item may state that its failure inherits the level of the item it protects (J3); the auditor records the inherited level and names the protected item.
 5. The verdict (section "Audit Result Protocol") is issued only after completing the full map.
 6. **Separated criticality counting.** Summary formulations must not merge failures (`no`) and partial implementations (`partial`) into a single number. Required format: "N critical failures (of which M in the `partial` category) + P [CRIT]-tagged items with a `partial` verdict, without double counting." Per-section codes must reconcile to the totals without intersections; reader reproducibility is mandatory. See `docs/AUDIT_GUIDE.md`.
 
@@ -290,8 +291,8 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 ## Section J. Change Management (CHANGE MANAGEMENT)
 
 - [ ] **J1** Independent logical changes are isolated: one change per observation interval. Coupled changes (e.g., schema + application code) are explicitly grouped and documented as a single logical unit. Simultaneous independent modifications are excluded (otherwise the cause of regression is non-localizable). **[CRIT]**
-- [ ] **J2** The success criterion of a change is measurable: baseline captured before (in tokens/numbers, not "by eye"), measurement after. The after-measurement is a reproducible artifact (run output, counter, diff), not an assertion; every claim in a remediation report is either evidence-linked or explicitly marked unverified. "Verified" means "reproduced", not "should work". **[CRIT]**
-- [ ] **J3** Every resolved incident is closed with a regression guard test; a fix without a test is considered incomplete. A test that is never executed (silent skip, async without runner, missing marker) is equally incomplete — it provides no evidence of correctness. Executed means the verdict is delivered to the scoring channel and cannot be silently ignored: exactly one verdict channel (a dual runner where each side ignores the other's result is a false green); deterministic execution (no races with background workers, no side-effects on shared process state); the guard operates on schema/state produced by the real migration path (hand-made fixtures drift from production stores); the guard asserts behavior, not source text (a constant check is documentation, not a test). Artifact-memory conflict cases should have regression guard tests where applicable. **[CRIT]**
+- [ ] **J2** The success criterion of a change is measurable: baseline captured before (in tokens/numbers, not "by eye"), measurement after. The after-measurement is a reproducible artifact (run output, counter, diff), not an assertion; every claim in a remediation report is either evidence-linked or explicitly marked unverified. "Verified" means "reproduced", not "should work". **[IMP]**
+- [ ] **J3** Every resolved incident is closed with a regression guard test; a fix without a test is considered incomplete. A test that is never executed (silent skip, async without runner, missing marker) is equally incomplete — it provides no evidence of correctness. Executed means the verdict is delivered to the scoring channel and cannot be silently ignored: exactly one verdict channel (a dual runner where each side ignores the other's result is a false green); deterministic execution (no races with background workers, no side-effects on shared process state); the guard operates on schema/state produced by the real migration path (hand-made fixtures drift from production stores); the guard asserts behavior, not source text (a constant check is documentation, not a test). Artifact-memory conflict cases should have regression guard tests where applicable. Inherited criticality: a J3 failure is scored [CRIT] when the guarded incident belongs to a [CRIT] item, [IMP] otherwise (precedent: I10 — warnings in [CRIT] zones). **[IMP]**
 - [ ] **J4** Local validation of context assembly (a snapshot of "what the model will actually see") precedes live testing. **[IMP]**
 - [ ] **J5** Changes are reversible: one change per commit, rollback of an individual step does not pull adjacent ones. **[IMP]**
 - [ ] **J6** A documentation cycle is maintained: diagnosis → spec → review → session log → report → post-solution pattern (generalization with applicability signals); patterns are checked for applicability at the start of each new spec. **[REC]**
@@ -371,6 +372,8 @@ Priority remediation order: ______
 1. Failure of any [CRIT] in sections 0, A, B, E, F means: the architecture in its current form is unsafe for long-term memory accumulation — until remediation, data will be lost, poisoned, or reproduce garbage.
 2. [CRIT] failures in C, D, G, H, I permit operation only with compensating controls (monitoring, caller-side limits) and a remediation plan.
 3. The audit is valid until the next significant architectural change; after each change, affected sections are re-examined (full pass — on architecture generation change).
+
+Inherited criticality: a J3 failure whose guarded incident belongs to a [CRIT] item is scored [CRIT] and enters the [CRIT] failures list.
 
 ---
 
