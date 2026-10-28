@@ -136,7 +136,7 @@
 
 | Item | Evidence | Impact | Proposed Fix |
 |------|----------|--------|-------------|
-| | | | |
+| **H3** | synthetic.md:71 | [IMP] failure | fix pending |
 
 ## Verdict
 

@@ -19,8 +19,9 @@ aliases:
 - criticality markers: `[CRIT]` / `[КРИТ]`, `[IMP]` / `[ВАЖ]`, `[REC]` / `[РЕК]`
 - verdicts: `yes` / `да`, `partial` / `частично`, `no` / `нет`, `n/a` / `н/п`
 - overall verdict labels: **DOES NOT PASS** / **НЕ ПРОХОДИТ**, **PASSES WITH CAVEATS** / **ПРОХОДИТ С ОГОВОРКАМИ**, **CONFORMS** / **СООТВЕТСТВУЕТ**
-- headings: `## Item Verdicts` / `## Вердикты по пунктам`; `## Critical Failures` / `## Провалы [КРИТ]`
+- headings: `## Item Verdicts` / `## Вердикты по пунктам`; `## Critical Failures` / `## Провалы [КРИТ]`; `## Important Failures` / `## Провалы [ВАЖ]`; `## Accepted Deviations` / `## Принятые отступления`
 - protocol table header: `| Section | Items | Yes | Partial | No | N/A | Failed [CRIT] |` or `| Раздел | пунктов | да | частично | нет | н/п | провалено [КРИТ] |`
+- Accepted Deviations column: `Accepted by` / `Кем принято`
 
 Item ids (`0.1`, `A4`, …) and the evidence-status values (`static` / `behavioral` /
 `pending`) stay as they are — they are standard identifiers, not free text.
@@ -189,15 +190,22 @@ Failures section below (gate check R2 reconciles the two).*
 
 ## Important Failures
 
+*The list must equal the computed one — gate check R6.*
+
 | Item | Evidence | Impact | Proposed Fix |
 |------|----------|--------|-------------|
 | | | | |
 
 ## Accepted Deviations
 
-| Item | Justification | Compensating Controls |
-|------|--------------|----------------------|
-| | | |
+| Item | Justification | Compensating Controls | Accepted by |
+|------|--------------|----------------------|-------------|
+| | | | |
+
+*Only items with a partial/no verdict (gate check R7). Accepted by the owner
+of the audited system, not by the auditor (S4). In an external audit without
+the owner's acceptance, leave this table empty and record deviations the
+maintainers declared (e.g. in code comments) under Post-Audit Notes.*
 
 ## Artifact–Memory Conflicts (optional)
 
@@ -216,6 +224,9 @@ Failures section below (gate check R2 reconciles the two).*
 *Check exactly one box — gate check R4 reads the checked line. The Warnings field lives in the header.*
 
 ## Remediation Roadmap
+
+*Internal audits. For an external audit of a system you do not own, replace
+with "Suggested Priorities (auditor's view, non-binding)" — no sprints, no status.*
 
 | Priority | Item | Sprint | Status |
 |----------|------|--------|--------|

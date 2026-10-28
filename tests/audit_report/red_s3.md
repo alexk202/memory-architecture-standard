@@ -137,7 +137,7 @@
 
 | Item | Evidence | Impact | Proposed Fix |
 |------|----------|--------|-------------|
-| | | | |
+| **0.6** | synthetic.md:7 | [IMP] failure | fix pending |
 
 ## Verdict
 

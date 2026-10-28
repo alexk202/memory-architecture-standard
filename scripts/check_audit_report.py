@@ -34,6 +34,14 @@ Hard checks (exit 1 on any failure):
   R5 provenance   the report names the audited version (commit SHA, or an explicit
                   "no-SHA" statement with a reconstruction note) and identifies the
                   standard version (field, or an explicit --standard-version).
+  R6 imp-list     the declared [IMP] failure list equals the computed one
+                  (verdict partial/no on an item marked [IMP] in STANDARD.md);
+                  a J3 that inherited [CRIT] is R2's business, not here. A
+                  missing Important Failures table with [IMP] failures on
+                  record is reported here as well.
+  R7 deviation-items  every id in the Accepted Deviations table is a checklist
+                  item with a partial/no verdict — there must be something
+                  to accept.
 
 Soft checks (reported, exit code unaffected unless --strict):
   S1 evidence-status  a static audit should mark verdicts as static implementation
@@ -43,22 +51,32 @@ Soft checks (reported, exit code unaffected unless --strict):
                       never happened; use "not collected".
   S3 section-claims   a section called CONFORMING/PASS must have no CRIT/IMP
                       failures.
+  S4 accepted-by   a deviation in the Accepted Deviations table is accepted by
+                   the owner of the audited system, not by the auditor: the
+                   "Accepted by" cell must be filled and must not name the
+                   auditor; deviation rows without an "Accepted by" column
+                   are reported as well.
 
 Report format contract (examples/AUDIT_REPORT_TEMPLATE.md): per-item verdict rows
 `| **<ID>** | <yes|partial|no|n/a> | <static|behavioral|pending> | <evidence> |
 <guarded item (J3 only)> |`; the guarded item is read from the dedicated fifth
 column only; the declared [CRIT] list lives under a "Critical Failures" /
-"[CRIT] ..." heading.
+"[CRIT] ..." heading, the declared [IMP] list under "Important Failures" /
+"[IMP] ..." (RU: "## Провалы [ВАЖ]"), and accepted deviations under
+"Accepted Deviations" / "## Принятые отступления" with the "Accepted by" /
+"Кем принято" column.
 
 Languages: English is canonical; Russian is an equal alias set, not a
 translation layer. The standard (translations/STANDARD_RU.md: markers
 [КРИТ]/[ВАЖ]/[РЕК]) and the report (verdicts да/частично/нет/н/п, labels
 НЕ ПРОХОДИТ / ПРОХОДИТ С ОГОВОРКАМИ / СООТВЕТСТВУЕТ, headings
-"## Вердикты по пунктам" and "## Провалы [КРИТ]", the Russian protocol-table
-header, the "Версия стандарта" field, Russian provenance wording) are parsed
-by the same rules; everything is normalized to the English canonical forms
-before any check runs. The gate output reports which language was recognized
-for the standard and for the report ("languages: report=ru, standard=ru").
+"## Вердикты по пунктам", "## Провалы [КРИТ]" / "## Провалы [ВАЖ]",
+"## Принятые отступления" with the "Кем принято" deviation column, the
+Russian protocol-table header, the "Версия стандарта" field, Russian
+provenance wording) are parsed by the same rules; everything is normalized
+to the English canonical forms before any check runs. The gate output
+reports which language was recognized for the standard and for the report
+("languages: report=ru, standard=ru").
 
 Messages name the actual standard file (--standard path, or "STANDARD.md" for
 a git-tag resolution) and the criticality marker in the standard's language:
@@ -125,6 +143,10 @@ CHECKBOX_RE = re.compile(
 # Headings of the template blocks, English and Russian forms both recognized.
 IV_HEADING_RE = r"^#{1,3}\s*(?:Item\s+Verdicts|Вердикты\s+по\s+пунктам)\b"
 CRIT_HEADING_RE = r"^#{2,3}\s*(?:\[CRIT\]|Critical|Провалы\s*\[(?:КРИТ)\])[^\n]*$"
+IMP_HEADING_RE = r"^#{2,3}\s*(?:\[IMP\]|Important|Провалы\s*\[(?:ВАЖ)\])[^\n]*$"
+DEV_HEADING_RE = r"^#{2,3}\s*(?:Accepted\s+Deviations|Принятые\s+отступления)[^\n]*$"
+ACCEPTED_BY_RE = re.compile(r"accepted\s+by\b|кем\s+принято\b", re.IGNORECASE)
+AUDITOR_RE = re.compile(r"\*{0,2}Auditor\*{0,2}:\*{0,2}\s*([^\n|]+)", re.IGNORECASE)
 
 # Language detection (informational, reported in the gate output; both
 # languages parse identically — this only says which one was recognized).
@@ -132,6 +154,8 @@ RU_STANDARD_RE = re.compile(r"\*\*\[(?:КРИТ|ВАЖ|РЕК)\]\*\*")
 RU_REPORT_RE = re.compile(
     r"Вердикты\s+по\s+пунктам"
     r"|Провалы\s*\[КРИТ\]"
+    r"|Провалы\s*\[ВАЖ\]"
+    r"|Принятые\s+отступления"
     r"|^\|\s*Раздел\s*\|"
     r"|\[\s*[xX]\s*\]\s*\*\*(?:НЕ\s+ПРОХОДИТ|ПРОХОДИТ\s+С\s+ОГОВОРКАМИ|СООТВЕТСТВУЕТ)\*\*"
     r"|^\|\s*\*{0,2}[\w.a-z]+\*{0,2}\s*\|\s*\*{0,2}(?:да|частично|н/п)\*{0,2}\s*\|",
@@ -202,6 +226,26 @@ def block_after(text: str, heading_pattern: str) -> str:
     return rest[: nxt.start()] if nxt else rest
 
 
+def table_rows(block: str) -> list[list[str]]:
+    """Cell lists of the table rows in a heading block; separator rows skipped."""
+    rows: list[list[str]] = []
+    for line in block.splitlines():
+        s = line.strip()
+        if not s.startswith("|") or set(s) <= set("|-: "):
+            continue
+        rows.append([c.strip() for c in s.strip("|").split("|")])
+    return rows
+
+
+def declared_ids(rows: list[list[str]], ncells: int = 2) -> set[str]:
+    """Item ids from the first `ncells` cells of every table row (R2/R6 style)."""
+    out: set[str] = set()
+    for cells in rows:
+        for c in cells[:ncells]:
+            out.update(t for t in ID_TOKEN_RE.findall(c))
+    return out
+
+
 def parse_report(text: str):
     verdicts: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for line in text.splitlines():
@@ -217,14 +261,9 @@ def parse_report(text: str):
             protocol[m.group("sec")] = {k: int(m.group(k)) for k in ("items", "yes", "partial", "no", "na", "crit")}
 
     # Declared [CRIT] failure list: table under a "Critical Failures" /
-    # "[CRIT] ..." heading (Russian: "## Провалы [КРИТ]").
-    crit_block = block_after(text, CRIT_HEADING_RE)
-    declared_crit = set()
-    for line in crit_block.splitlines():
-        if line.startswith("|") and not set(line) <= set("|-: "):
-            cells = [c.strip() for c in line.strip("|").split("|")]
-            for c in cells[:2]:
-                declared_crit.update(t for t in ID_TOKEN_RE.findall(c))
+    # "[CRIT] ..." heading (Russian: "## Провалы [КРИТ]"); ids from the
+    # first two cells of every table row.
+    declared_crit = declared_ids(table_rows(block_after(text, CRIT_HEADING_RE)), 2)
 
     # J3 guarded items: the dedicated fifth column of the J3 verdict row(s) only.
     guarded: set[str] = set()
@@ -324,6 +363,46 @@ def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md
         hard.append(("R2", f"{markers['CRIT']} items with partial/no missing from the {markers['CRIT']} "
                            f"failure list: " + ", ".join(under)))
 
+    # R6 imp list: the same reconciliation as R2 for [IMP] items. A J3 that
+    # inherited [CRIT] is already in the R2 list, so it is excluded here.
+    computed_imp = {i for i, verdict in v.items() if verdict in FAILING and std[i] == "IMP"}
+    if j3_inherited:
+        computed_imp.discard("J3")
+    if re.search(IMP_HEADING_RE, report_text, re.IGNORECASE | re.MULTILINE):
+        declared_imp = declared_ids(table_rows(block_after(report_text, IMP_HEADING_RE)), 2)
+        over_imp = sorted(declared_imp - computed_imp, key=_key)
+        under_imp = sorted(computed_imp - declared_imp, key=_key)
+        for i in over_imp:
+            why = (f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
+                   if std.get(i) != "IMP" else f"verdict is '{v.get(i)}'")
+            hard.append(("R6", f"{i} listed as [IMP] failure but {why}"))
+        if under_imp:
+            hard.append(("R6", f"[{markers['IMP']}] items with partial/no missing from the "
+                               f"[{markers['IMP']}] failure list: " + ", ".join(under_imp)))
+    elif computed_imp:
+        hard.append(("R6", "Important Failures table not found"))
+
+    # Accepted Deviations table: read once for R7 (hard) and S4 (soft).
+    dev_rows = table_rows(block_after(report_text, DEV_HEADING_RE))
+    accepted_by_col = None
+    if dev_rows and not ID_TOKEN_RE.search(dev_rows[0][0]):
+        for idx, cell in enumerate(dev_rows[0]):
+            if ACCEPTED_BY_RE.match(cell):
+                accepted_by_col = idx
+                break
+
+    # R7 deviation items: every listed deviation must be a checklist item
+    # with a partial/no verdict — there must be something to accept.
+    for cells in dev_rows:
+        for i in ID_TOKEN_RE.findall(cells[0]):
+            if i not in std:
+                hard.append(("R7", f"{i} in Accepted Deviations is not an item of {standard_ref}"))
+                continue
+            verdict = v.get(i)
+            if verdict not in FAILING:
+                shown = verdict if verdict is not None else "unknown"
+                hard.append(("R7", f"{i} in Accepted Deviations has verdict '{shown}' — nothing to accept"))
+
     # R3 protocol
     if not protocol:
         hard.append(("R3", "Audit Result Protocol table not found or not parseable"))
@@ -385,6 +464,23 @@ def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md
             fails = [i for i, verdict in v.items() if section_of(i) == sec and verdict in FAILING and std[i] in ("CRIT", "IMP")]
             if fails:
                 soft.append(("S3", f"section {sec} called {claim} but has CRIT/IMP failures: {', '.join(sorted(fails, key=_key))}"))
+
+    # S4 accepted-by (soft): a deviation is accepted by the owner of the
+    # audited system, not by the auditor.
+    dev_id_rows = [cells for cells in dev_rows if ID_TOKEN_RE.findall(cells[0])]
+    if dev_id_rows and accepted_by_col is None:
+        soft.append(("S4", "Accepted Deviations without an 'Accepted by' column"))
+    elif accepted_by_col is not None:
+        m_aud = AUDITOR_RE.search(head)
+        auditor = m_aud.group(1).strip().casefold() if m_aud else None
+        for cells in dev_id_rows:
+            val = cells[accepted_by_col].strip() if accepted_by_col < len(cells) else ""
+            for i in ID_TOKEN_RE.findall(cells[0]):
+                if not val:
+                    soft.append(("S4", f"{i} deviation has no 'Accepted by'"))
+                elif auditor and val.casefold() == auditor:
+                    soft.append(("S4", f"{i} deviation accepted by the auditor; acceptance "
+                                       f"belongs to the owner of the audited system"))
 
     return {
         "standard_items": len(std),

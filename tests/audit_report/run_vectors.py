@@ -7,10 +7,12 @@ Soft vectors are checked twice: default (soft reported, exit 0) and --strict
 (soft fails, exit 1).
 
 GREEN vectors must come out clean (no hard, no soft). RED vectors must fail
-with exactly the designed finding codes — no more, no less. Two RU vectors are
+with exactly the designed finding codes — no more, no less. RU vectors are
 also re-run against the Russian standard itself (--standard
-translations/STANDARD_RU.md; the PASS line shows [standard=ru], and the R2
-message must name the RU file and the RU marker).
+translations/STANDARD_RU.md; the PASS line shows [standard=ru], and the
+asserted message must name the RU file and the RU marker: R2 —
+"marked [ВАЖ] in translations/STANDARD_RU.md", R6 — "marked [РЕК] in
+translations/STANDARD_RU.md").
 
 Usage: python3 tests/audit_report/run_vectors.py
 Exit 0 = all vectors behave as designed; exit 1 = a deviation (list printed).
@@ -52,6 +54,16 @@ CASES = [
     ("red_s3.md",                STD, 0, set(), {"S3"}),
     ("red_s3.md",                STD + ["--strict"], 1, set(), {"S3"}),
     ("red_r5.md",                [],  1, {"R5"}, set()),
+    # R6: the Important Failures list must equal the computed [IMP] failures
+    # (inflation / omission / no table at all); R7: deviations must be
+    # failing items; S4 (soft): acceptance belongs to the owner of the
+    # audited system, not the auditor (default + --strict like S1-S3).
+    ("red_r6_imp_inflation.md",  STD, 1, {"R6"}, set()),
+    ("red_r6_imp_omission.md",   STD, 1, {"R6"}, set()),
+    ("red_r6_no_table.md",       STD, 1, {"R6"}, set()),
+    ("red_r7_deviation_on_pass.md", STD, 1, {"R7"}, set()),
+    ("red_s4_auditor_accepted.md",  STD, 0, set(), {"S4"}),
+    ("red_s4_auditor_accepted.md",  STD + ["--strict"], 1, set(), {"S4"}),
     # Russian-language vectors: fully Russian reports against the same
     # standard (mixed audit type). GREEN must stay clean; RED classes must
     # fire exactly as in the English vectors.
@@ -59,11 +71,14 @@ CASES = [
     ("ru_red_r2_inflation.md",   STD, 1, {"R2"}, set()),
     ("ru_red_r3_text_crit.md",   STD, 1, {"R3"}, set()),
     ("ru_red_r4_softened.md",    STD, 1, {"R4"}, set()),
-    # The same two RU vectors re-run against the Russian standard itself
+    ("ru_red_r6_imp_inflation.md", STD, 1, {"R6"}, set()),
+    # RU vectors re-run against the Russian standard itself
     # (--standard translations/STANDARD_RU.md): the gate output must show
-    # standard=ru, and the R2 message must name the RU file and the RU marker.
+    # standard=ru, and the R2/R6 messages must name the RU file and the RU
+    # marker (MSG_EXPECT below).
     ("ru_green_mixed.md",        RU_STD, 0, set(), set()),
     ("ru_red_r2_inflation.md",   RU_STD, 1, {"R2"}, set()),
+    ("ru_red_r6_imp_inflation.md", RU_STD, 1, {"R6"}, set()),
 ]
 
 # Required substring in a gate message for the given run (message-level checks
@@ -72,6 +87,8 @@ CASES = [
 MSG_EXPECT = {
     ("ru_red_r2_inflation.md", tuple(RU_STD)):
         "marked [ВАЖ] in translations/STANDARD_RU.md",
+    ("ru_red_r6_imp_inflation.md", tuple(RU_STD)):
+        "marked [РЕК] in translations/STANDARD_RU.md",
 }
 
 

@@ -98,6 +98,57 @@ gate has been through a live audit, owner decision.*
 Checklist unchanged (96). No release: the gate ships to [Unreleased]
 until it has been through a live audit (owner decision).
 
+### Added (audit-report gate checks R6/R7/S4, 2026-10-28)
+
+*Origin: first external audit: gate was GREEN with a [REC] item in
+Important Failures, a missing [IMP] failure, and deviations accepted by
+the auditor — R2 reconciled only the [CRIT] list, and nothing checked
+who accepted the deviations.*
+
+- **scripts/check_audit_report.py** — three new checks. Hard R6
+  (imp-list): the Important Failures table must equal the computed
+  [IMP] failures (verdict partial/no on an item marked [IMP] in
+  STANDARD.md; a J3 that inherited [CRIT] belongs to R2, not here) —
+  over-listing is reported per item in the R2 wording ("marked [РЕК] in
+  translations/STANDARD_RU.md" against the Russian standard), omission
+  as one line with the id list, and a missing Important Failures table
+  with [IMP] failures on record as its own line. Hard R7
+  (deviation-items): every id in the Accepted Deviations table must be
+  a checklist item with a partial/no verdict — there is nothing to
+  accept otherwise ("has verdict 'yes' — nothing to accept", "is not an
+  item of <standard file>"). Soft S4 (accepted-by, exit 1 only under
+  --strict like S1–S3): the "Accepted by" / «Кем принято» cell must be
+  filled and must not equal the report's Auditor field (case- and
+  whitespace-insensitive); deviation rows without the column are
+  reported as well. RU report headings «## Провалы [ВАЖ]» and
+  «## Принятые отступления» recognized (RU_REPORT_RE extended);
+  docstring updated.
+- **examples/AUDIT_REPORT_TEMPLATE.md** — Accepted Deviations gains the
+  "Accepted by" column and the note: only partial/no items (R7);
+  acceptance by the owner of the audited system, not by the auditor
+  (S4); in an external audit without the owner's acceptance leave the
+  table empty and record maintainer-declared deviations under Post-Audit
+  Notes. Important Failures note: the list must equal the computed one
+  (R6). Remediation Roadmap note: internal audits; for an external audit
+  of a system you do not own replace it with "Suggested Priorities
+  (auditor's view, non-binding)" — no sprints, no status. Language Note
+  lists the new RU heading aliases and the Accepted by / Кем принято
+  column. The empty template stays RED.
+- **tests/audit_report/** — vectors 27 → 35 runs. New RED vectors:
+  R6 imp-inflation (a [REC] item listed as an [IMP] failure), R6
+  imp-omission (a failing [IMP] item missing from the list), R6
+  no-table (no Important Failures section with [IMP] failures on
+  record), R7 deviation-on-pass (a verdict-yes item and an id outside
+  the standard listed as deviations), soft S4 auditor-accepted (default
+  exit 0, --strict exit 1); RU R6 vector (a [РЕК] item in «Провалы
+  [ВАЖ]») run both against the tag and against
+  translations/STANDARD_RU.md, the latter asserting the message contains
+  "marked [РЕК] in translations/STANDARD_RU.md". Three existing RED
+  vectors corrected (they are synthetic): red_r3, red_r4_wrong, red_s3
+  gained the missing Important Failures rows for their failing [IMP]
+  items (H3, H3, 0.6) so each still fails with exactly its own code
+  under the new R6.
+
 ### Backlog (pending)
 
 - Backlog-only (not scheduled for 1.8.2): evidence linter for file:line
