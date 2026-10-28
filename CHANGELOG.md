@@ -6,6 +6,8 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+Target: 1.8.2 (tooling and template only; checklist unchanged at 96).
+
 ### Added (audit-report consistency gate, 2026-10-27)
 
 *Incident: an agent-run static audit of an external project (2026-10-26,
@@ -36,6 +38,11 @@ gate has been through a live audit, owner decision.*
   per-section codes reconcile with the list (§2.2 step 6). The gate
   checks consistency, not correctness: a wrong "yes" with a consistent
   protocol stays green — the reviewer's job.
+  First live use: re-audit of a local assistant against v1.8.1
+  (2026-10-28). The gate caught a missing [CRIT] entry (R2), forced
+  protocol recounts (R3), and blocked a softened overall verdict (a
+  [CRIT] partial scored as a failure). Russian-language support
+  (markers, verdicts, labels, headings) added after this run.
 - **examples/AUDIT_REPORT_TEMPLATE.md** — header fields (Standard
   version; Audited version: SHA | no-SHA with reason and
   reconstruction; Audit type: static | behavioral | mixed; Warnings:
@@ -43,18 +50,30 @@ gate has been through a live audit, owner decision.*
   carrying the v1.7 glossary terms; dedicated guarded-item column for
   J3), protocol table computed from the rows, never hand-written.
   Pre-Audit section: P11 step (Agent audit discipline) added per
-  STANDARD.md v1.8.1 — the template's P-list had lagged at P1–P10
-  since v1.7.
+  STANDARD.md v1.8.1 — the template's P-list had lagged at P1-P10
+  since v1.7. Language note: the report may be written in English or
+  Russian — the accepted Russian aliases (markers [КРИТ]/[ВАЖ]/[РЕК],
+  verdicts да/частично/нет/н/п, verdict labels НЕ ПРОХОДИТ /
+  ПРОХОДИТ С ОГОВОРКАМИ / СООТВЕТСТВУЕТ, the "## Вердикты по пунктам"
+  and "## Провалы [КРИТ]" headings, the Russian protocol-table
+  header) are listed; item ids and evidence-status values stay as
+  standard identifiers. Protocol note: the Failed [CRIT] column holds
+  the NUMBER of [CRIT] failures per section, the item list lives in
+  the Critical Failures section.
 - **docs/AUDIT_GUIDE.md §2.2** — two rules: criticality is copied
   verbatim from STANDARD.md of the audited version; the protocol is
   computed after the last verdict row (by the gate or the same rule by
   hand).
-- **tests/audit_report/** — synthetic vectors + runner (20 runs): GREEN
+- **tests/audit_report/** — synthetic vectors + runner (25 runs): GREEN
   all-yes; GREEN mixed with correct protocol; GREEN J3-[CRIT]-guard
   applied correctly; RED one per class — R1 missing/dup/unknown, R2
   inflation/omission, R3, R4 wrong-verdict/zero-checked/all-three, R5,
-  S1–S3 (default + --strict), J3 inheritance. The external-project
-  report is deliberately NOT committed.
+  S1–S3 (default + --strict), J3 inheritance. Russian-language vectors
+  (added after the first live run): GREEN fully-Russian mixed report;
+  RED R2 — an [IMP] item listed in "Провалы [КРИТ]"; RED R3 — text
+  instead of a number in the Failed [CRIT] column; RED R4 — a [CRIT]
+  partial with the softened "ПРОХОДИТ С ОГОВОРКАМИ" verdict. The
+  external-project report is deliberately NOT committed.
 - docs/proposals/PROPOSAL_audit_report_gate.md — the proposal
   (incident anonymized per the name policy).
 - Gate run on examples/AUDIT_REPORT_2026-09-01.md against v1.2
@@ -72,6 +91,10 @@ until it has been through a live audit (owner decision).
 
 ### Backlog (pending)
 
+- Backlog-only (not scheduled for 1.8.2): evidence linter for file:line
+  references — resolved against the audited commit (the SHA from the
+  report header), not the current tree; a --baseline delta mode for
+  re-audits; a generator for per-item verdict rows from CSV/YAML input
 - MAQS_BASE Stage 7: review of staged needs_review clusters
   (webhook-secret Permission denied ×22, context-truncate ×25);
   candidates pass the admission gate (docs/ADMISSION_CRITERIA.md §2),

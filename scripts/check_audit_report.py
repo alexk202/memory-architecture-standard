@@ -50,6 +50,16 @@ Report format contract (examples/AUDIT_REPORT_TEMPLATE.md): per-item verdict row
 column only; the declared [CRIT] list lives under a "Critical Failures" /
 "[CRIT] ..." heading.
 
+Languages: English is canonical; Russian is an equal alias set, not a
+translation layer. The standard (translations/STANDARD_RU.md: markers
+[КРИТ]/[ВАЖ]/[РЕК]) and the report (verdicts да/частично/нет/н/п, labels
+НЕ ПРОХОДИТ / ПРОХОДИТ С ОГОВОРКАМИ / СООТВЕТСТВУЕТ, headings
+"## Вердикты по пунктам" and "## Провалы [КРИТ]", the Russian protocol-table
+header, the "Версия стандарта" field, Russian provenance wording) are parsed
+by the same rules; everything is normalized to the English canonical forms
+before any check runs. The gate output reports which language was recognized
+for the standard and for the report ("languages: report=ru, standard=ru").
+
 Usage:
   python3 check_audit_report.py REPORT.md [--standard PATH]
       [--standard-version TAG] [--strict] [--format json]
@@ -74,10 +84,25 @@ FAILING = {"partial", "no"}
 SECTION_ORDER = ["0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 VERDICT_LABELS = ("DOES NOT PASS", "PASSES WITH CAVEATS", "CONFORMS")
 
+# Russian aliases (translations/STANDARD_RU.md) are equal, not secondary:
+# criticality markers [КРИТ]/[ВАЖ]/[РЕК], verdicts да/частично/нет/н/п, the
+# overall-verdict labels НЕ ПРОХОДИТ / ПРОХОДИТ С ОГОВОРКАМИ / СООТВЕТСТВУЕТ,
+# the "## Вердикты по пунктам" and "## Провалы [КРИТ]" headings, the Russian
+# protocol-table header and the "Версия стандарта" field. Everything is
+# normalized to the English canonical form before any check runs.
+CRIT_ALIAS = {"CRIT": "CRIT", "КРИТ": "CRIT", "IMP": "IMP", "ВАЖ": "IMP", "REC": "REC", "РЕК": "REC"}
+VERDICT_ALIAS = {"да": "yes", "частично": "partial", "нет": "no", "н/п": "n/a"}
+VERDICT_LABEL_ALIAS = {
+    "НЕ ПРОХОДИТ": "DOES NOT PASS",
+    "ПРОХОДИТ С ОГОВОРКАМИ": "PASSES WITH CAVEATS",
+    "СООТВЕТСТВУЕТ": "CONFORMS",
+}
+
 ITEM_RE = re.compile(r"^- \[[ xX]\] \*\*(?P<id>(?:\d+\.\d+[a-z]?)|(?:[A-J]\d+))\*\*(?P<rest>.*)$")
-CRIT_RE = re.compile(r"\*\*\[(CRIT|IMP|REC)\]\*\*")
+CRIT_RE = re.compile(r"\*\*\[(CRIT|КРИТ|IMP|ВАЖ|REC|РЕК)\]\*\*")
 ROW_RE = re.compile(
-    r"^\|\s*\*\*(?P<id>(?:\d+\.\d+[a-z]?)|(?:[A-J]\d+)|(?:SUPP-[A-Z]+-\d+))\*\*[^|]*\|\s*\*{0,2}(?P<v>yes|partial|no|n/a)\*{0,2}\s*\|",
+    r"^\|\s*\*\*(?P<id>(?:\d+\.\d+[a-z]?)|(?:[A-J]\d+)|(?:SUPP-[A-Z]+-\d+))\*\*[^|]*\|"
+    r"\s*\*{0,2}(?P<v>yes|partial|no|n/a|да|частично|нет|н/п)\*{0,2}\s*\|",
     re.IGNORECASE,
 )
 PROTO_RE = re.compile(
@@ -87,9 +112,34 @@ PROTO_RE = re.compile(
 ID_TOKEN_RE = re.compile(r"\b((?:\d+\.\d+[a-z]?)|(?:[A-J]\d{1,2}))\b")
 ROW_PRESENCE_RE = re.compile(r"^\|\s*\*\*(?P<id>(?:\d+\.\d+[a-z]?)|(?:[A-J]\d+)|(?:SUPP-[A-Z]+-\d+))\*\*")
 CHECKBOX_RE = re.compile(
-    r"^[-*]\s*\[([ xX])\]\s*\*\*(?P<label>DOES NOT PASS|PASSES WITH CAVEATS|CONFORMS)\*\*",
+    r"^[-*]\s*\[([ xX])\]\s*\*\*(?P<label>DOES NOT PASS|PASSES WITH CAVEATS|CONFORMS"
+    r"|НЕ ПРОХОДИТ|ПРОХОДИТ С ОГОВОРКАМИ|СООТВЕТСТВУЕТ)\*\*",
     re.IGNORECASE | re.MULTILINE,
 )
+
+# Headings of the template blocks, English and Russian forms both recognized.
+IV_HEADING_RE = r"^#{1,3}\s*(?:Item\s+Verdicts|Вердикты\s+по\s+пунктам)\b"
+CRIT_HEADING_RE = r"^#{2,3}\s*(?:\[CRIT\]|Critical|Провалы\s*\[(?:КРИТ)\])[^\n]*$"
+
+# Language detection (informational, reported in the gate output; both
+# languages parse identically — this only says which one was recognized).
+RU_STANDARD_RE = re.compile(r"\*\*\[(?:КРИТ|ВАЖ|РЕК)\]\*\*")
+RU_REPORT_RE = re.compile(
+    r"Вердикты\s+по\s+пунктам"
+    r"|Провалы\s*\[КРИТ\]"
+    r"|^\|\s*Раздел\s*\|"
+    r"|\[\s*[xX]\s*\]\s*\*\*(?:НЕ\s+ПРОХОДИТ|ПРОХОДИТ\s+С\s+ОГОВОРКАМИ|СООТВЕТСТВУЕТ)\*\*"
+    r"|^\|\s*\*{0,2}[\w.a-z]+\*{0,2}\s*\|\s*\*{0,2}(?:да|частично|н/п)\*{0,2}\s*\|",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def detect_standard_language(text: str) -> str:
+    return "ru" if RU_STANDARD_RE.search(text) else "en"
+
+
+def detect_report_language(text: str) -> str:
+    return "ru" if RU_REPORT_RE.search(text) else "en"
 
 
 def section_of(item_id: str) -> str:
@@ -109,7 +159,7 @@ def parse_standard(text: str) -> dict[str, str]:
         while crit is None and j < len(lines) and not ITEM_RE.match(lines[j]) and not lines[j].startswith("## "):
             crit = CRIT_RE.search(lines[j])
             j += 1
-        items[m.group("id")] = crit.group(1) if crit else "?"
+        items[m.group("id")] = CRIT_ALIAS[crit.group(1)] if crit else "?"
     return items
 
 
@@ -121,7 +171,7 @@ def resolve_standard(args, report_text: str):
     tag = args.standard_version
     if not tag:
         head = report_text[:3000]
-        m = re.search(r"\*{0,2}Standard\s+version\*{0,2}\s*:\s*(.+)", head, re.IGNORECASE)
+        m = re.search(r"\*{0,2}(?:Standard\s+version|Версия\s+стандарта)\*{0,2}\s*:\s*(.+)", head, re.IGNORECASE)
         if m:
             vm = re.search(r"v?(\d+(?:\.\d+)+)", m.group(1))
             if vm:
@@ -152,7 +202,8 @@ def parse_report(text: str):
     for line in text.splitlines():
         m = ROW_RE.match(line.strip())
         if m:
-            verdicts[m.group("id")].append((m.group("v").lower(), line.strip()))
+            val = VERDICT_ALIAS.get(m.group("v").lower(), m.group("v").lower())
+            verdicts[m.group("id")].append((val, line.strip()))
 
     protocol = {}
     for line in text.splitlines():
@@ -160,8 +211,9 @@ def parse_report(text: str):
         if m:
             protocol[m.group("sec")] = {k: int(m.group(k)) for k in ("items", "yes", "partial", "no", "na", "crit")}
 
-    # Declared [CRIT] failure list: table under a "Critical Failures" / "[CRIT] ..." heading.
-    crit_block = block_after(text, r"^#{2,3}\s*(?:\[CRIT\]|Critical)[^\n]*$")
+    # Declared [CRIT] failure list: table under a "Critical Failures" /
+    # "[CRIT] ..." heading (Russian: "## Провалы [КРИТ]").
+    crit_block = block_after(text, CRIT_HEADING_RE)
     declared_crit = set()
     for line in crit_block.splitlines():
         if line.startswith("|") and not set(line) <= set("|-: "):
@@ -176,8 +228,10 @@ def parse_report(text: str):
         if len(cells) >= 6 and cells[5]:
             guarded.update(ID_TOKEN_RE.findall(cells[5]))
 
-    # R4 reads the checked verdict line ([x]).
-    checked = [m.group("label").upper() for m in CHECKBOX_RE.finditer(text) if m.group(1).lower() == "x"]
+    # R4 reads the checked verdict line ([x]); Russian labels are normalized
+    # to the English canonical forms before comparison.
+    checked = [VERDICT_LABEL_ALIAS.get(m.group("label").upper(), m.group("label").upper())
+               for m in CHECKBOX_RE.finditer(text) if m.group(1).lower() == "x"]
 
     section_claims = {}
     for m in re.finditer(r"\*\*(?P<sec>[0A-J]) verdict:\*\*\s*(?P<claim>[A-Z ]+)", text):
@@ -220,7 +274,7 @@ def check(report_text: str, standard_text: str) -> dict:
     # missing verdict row. The two R1 messages are separate: "without a verdict
     # row" vs "a verdict row but an empty verdict cell" (the empty template
     # stays RED either way).
-    iv_block = block_after(report_text, r"^#{1,3}\s*Item\s+Verdicts\b")
+    iv_block = block_after(report_text, IV_HEADING_RE)
     present: set[str] = set()
     empty_verdict: set[str] = set()
     for line in iv_block.splitlines():
@@ -286,11 +340,16 @@ def check(report_text: str, standard_text: str) -> dict:
     elif checked[0] != expected:
         hard.append(("R4", f"overall verdict '{checked[0]}', rules give '{expected}'"))
 
-    # R5 provenance: audited version (SHA or explicit no-SHA statement).
+    # R5 provenance: audited version (SHA or explicit no-SHA statement);
+    # English and Russian header forms both recognized ("Audited version:"
+    # / "Аудируемая версия:", commit SHA or "коммит <SHA>", "no-SHA" /
+    # "без sha / без коммита / без .git").
     head = report_text[:3000]
-    has_sha = re.search(r"(commit|sha|revision)[^\n]{0,40}\b[0-9a-f]{7,40}\b", head, re.IGNORECASE)
-    has_sha = has_sha or re.search(r"audited\s+version\*{0,2}\s*:[^\n]*\b[0-9a-f]{7,40}\b", head, re.IGNORECASE)
-    declared_no_sha = re.search(r"no[-\s](commit\s+)?sha|without\s+\.git|sha\s+(not|un)", head, re.IGNORECASE)
+    has_sha = re.search(r"(commit|sha|revision|коммит)[^\n]{0,40}\b[0-9a-f]{7,40}\b", head, re.IGNORECASE)
+    has_sha = has_sha or re.search(r"(?:audited|аудируем\w*)\s+(?:version|верси\w*)\*{0,2}\s*:[^\n]*\b[0-9a-f]{7,40}\b",
+                                   head, re.IGNORECASE)
+    declared_no_sha = re.search(r"no[-\s](commit\s+)?sha|without\s+\.git|sha\s+(not|un)|без\s+(?:sha|коммита?|\.git)",
+                                head, re.IGNORECASE)
     if not has_sha and not declared_no_sha:
         hard.append(("R5", "audited version not identified: no commit SHA and no explicit no-SHA statement in the header"))
 
@@ -346,6 +405,8 @@ def main(argv=None) -> int:
     result = {
         "standard_source": source,
         "standard_version": tag,
+        "standard_language": detect_standard_language(standard_text) if standard_text is not None else None,
+        "report_language": detect_report_language(report_text),
         "hard": hard,
         "soft": [],
     }
@@ -371,6 +432,10 @@ def main(argv=None) -> int:
     else:
         if source:
             print(f"standard: {result['standard_version'] or ''} via {source}" if tag else f"standard: {source}")
+        langs = f"languages: report={result['report_language']}"
+        if result["standard_language"]:
+            langs += f", standard={result['standard_language']}"
+        print(langs)
         print(f"standard items: {result.get('standard_items', 0)}")
         if result.get("items_unparsed_criticality"):
             print("WARNING: criticality not parsed for: " + ", ".join(result["items_unparsed_criticality"]))

@@ -48,6 +48,13 @@ CASES = [
     ("red_s3.md",                STD, 0, set(), {"S3"}),
     ("red_s3.md",                STD + ["--strict"], 1, set(), {"S3"}),
     ("red_r5.md",                [],  1, {"R5"}, set()),
+    # Russian-language vectors: fully Russian reports against the same
+    # standard (mixed audit type). GREEN must stay clean; RED classes must
+    # fire exactly as in the English vectors.
+    ("ru_green_mixed.md",        STD, 0, set(), set()),
+    ("ru_red_r2_inflation.md",   STD, 1, {"R2"}, set()),
+    ("ru_red_r3_text_crit.md",   STD, 1, {"R3"}, set()),
+    ("ru_red_r4_softened.md",    STD, 1, {"R4"}, set()),
 ]
 
 

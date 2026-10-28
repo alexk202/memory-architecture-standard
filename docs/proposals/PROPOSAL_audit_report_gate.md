@@ -43,6 +43,7 @@ Soft checks, which fail only under `--strict`:
 **Test vectors:**
 - **GREEN:** synthetic reports built from STANDARD.md — one all-yes, one mixed with failures and a correct protocol, one applying J3 inherited criticality correctly (a failing J3 guarding a [CRIT] item, listed and counted as [CRIT]).
 - **RED:** synthetic, one per failure class — R1 (missing row, duplicate row, unknown id), R2 (inflated list, omitted [CRIT] failure), R3 (protocol mismatch), R4 (wrong checked verdict; zero checked; all three checked), R5 (no standard version identified), S1–S3 (soft), J3 inheritance (a [CRIT]-guarded J3 failure scored as [IMP]). The external-project report is deliberately not committed.
+- **Russian-language vectors (added after the first live run, 2026-10-28):** a fully-Russian GREEN report, and RED R2 ([IMP] item listed in "Провалы [КРИТ]"), R3 (text instead of a number in the Failed [CRIT] column), R4 (a [CRIT] partial with the softened "ПРОХОДИТ С ОГОВОРКАМИ" verdict) — Russian aliases are equal to the English forms, not a separate format.
 
 The gate verifies consistency, not correctness. A wrong "yes" with a consistent protocol stays green; that remains the reviewer's job.
 

@@ -11,6 +11,20 @@
 
 ---
 
+## Language Note (English or Russian)
+
+The report may be written in English or Russian — the gate accepts both as equal
+aliases:
+
+- criticality markers: `[CRIT]` / `[КРИТ]`, `[IMP]` / `[ВАЖ]`, `[REC]` / `[РЕК]`
+- verdicts: `yes` / `да`, `partial` / `частично`, `no` / `нет`, `n/a` / `н/п`
+- overall verdict labels: **DOES NOT PASS** / **НЕ ПРОХОДИТ**, **PASSES WITH CAVEATS** / **ПРОХОДИТ С ОГОВОРКАМИ**, **CONFORMS** / **СООТВЕТСТВУЕТ**
+- headings: `## Item Verdicts` / `## Вердикты по пунктам`; `## Critical Failures` / `## Провалы [КРИТ]`
+- protocol table header: `| Section | Items | Yes | Partial | No | N/A | Failed [CRIT] |` or `| Раздел | пунктов | да | частично | нет | н/п | провалено [КРИТ] |`
+
+Item ids (`0.1`, `A4`, …) and the evidence-status values (`static` / `behavioral` /
+`pending`) stay as they are — they are standard identifiers, not free text.
+
 ## Pre-Audit Checklist (Section 2.1)
 
 - [ ] P1: Backup completed
@@ -160,6 +174,10 @@ Guarded item: J3 only — inherited criticality (§2.2 p.4): a failing J3 guardi
 | H. Concurrency | 6 | | | | | |
 | I. Observability | 16 | | | | | |
 | J. Change Management | 6 | | | | | |
+
+*The last column, Failed [CRIT], holds the NUMBER of [CRIT] failures in the
+section — not the list of items. The list itself lives in the Critical
+Failures section below (gate check R2 reconciles the two).*
 
 ## Critical Failures
 
