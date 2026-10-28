@@ -64,6 +64,11 @@ CASES = [
     ("red_r7_deviation_on_pass.md", STD, 1, {"R7"}, set()),
     ("red_s4_auditor_accepted.md",  STD, 0, set(), {"S4"}),
     ("red_s4_auditor_accepted.md",  STD + ["--strict"], 1, set(), {"S4"}),
+    # Failure-table ids are read from the first id-bearing cell only:
+    # free-text Evidence in the second cell must not yield item ids, and a
+    # '#' numbering column in the first cell keeps working.
+    ("green_freetext_ids.md",        STD, 0, set(), set()),
+    ("green_numbered_fail_table.md", STD, 0, set(), set()),
     # Russian-language vectors: fully Russian reports against the same
     # standard (mixed audit type). GREEN must stay clean; RED classes must
     # fire exactly as in the English vectors.

@@ -237,12 +237,38 @@ def table_rows(block: str) -> list[list[str]]:
     return rows
 
 
+MARKER_PIECE_RE = re.compile(r"[\[(]\*{0,2}(?:CRIT|КРИТ|IMP|ВАЖ|REC|РЕК)\*{0,2}[\])]")
+
+
+def _id_cell_tokens(cell: str) -> list[str] | None:
+    """Item ids when the cell consists of item-id token(s) with optional
+    criticality markers ('**A4**', 'D6 [REC]', 'A4, A5'), else None —
+    free text never yields ids."""
+    cleaned = cell.replace("*", "").replace(",", " ").strip()
+    parts = cleaned.split()
+    if not parts:
+        return None
+    for p in parts:
+        if not (ID_TOKEN_RE.fullmatch(p) or MARKER_PIECE_RE.fullmatch(p)):
+            return None
+    ids = [p for p in parts if ID_TOKEN_RE.fullmatch(p)]
+    return ids or None
+
+
 def declared_ids(rows: list[list[str]], ncells: int = 2) -> set[str]:
-    """Item ids from the first `ncells` cells of every table row (R2/R6 style)."""
+    """Item ids from the first id-bearing cell of every table row (R2/R6
+    style). A cell is id-bearing when it consists of item-id token(s) with
+    optional criticality markers ('**A4**', 'D6 [REC]', 'A4, A5') — free
+    text (Evidence in the second cell, descriptions) never yields ids, and
+    a '#' numbering column in the first cell is skipped in favor of the
+    next cell. Cells after the first id-bearing one are not read."""
     out: set[str] = set()
     for cells in rows:
         for c in cells[:ncells]:
-            out.update(t for t in ID_TOKEN_RE.findall(c))
+            toks = _id_cell_tokens(c)
+            if toks:
+                out.update(toks)
+                break
     return out
 
 
@@ -356,8 +382,12 @@ def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md
     over = sorted(declared_crit - computed_crit, key=_key)
     under = sorted(computed_crit - declared_crit, key=_key)
     for i in over:
-        why = (f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
-               if std.get(i) != "CRIT" else f"verdict is '{v.get(i)}'")
+        if std.get(i) != "CRIT":
+            why = f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
+        elif v.get(i) is None:
+            why = "has no verdict row (see R1)"
+        else:
+            why = f"verdict is '{v.get(i)}'"
         hard.append(("R2", f"{i} listed as [CRIT] failure but {why}"))
     if under:
         hard.append(("R2", f"{markers['CRIT']} items with partial/no missing from the {markers['CRIT']} "
@@ -373,8 +403,12 @@ def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md
         over_imp = sorted(declared_imp - computed_imp, key=_key)
         under_imp = sorted(computed_imp - declared_imp, key=_key)
         for i in over_imp:
-            why = (f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
-                   if std.get(i) != "IMP" else f"verdict is '{v.get(i)}'")
+            if std.get(i) != "IMP":
+                why = f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
+            elif v.get(i) is None:
+                why = "has no verdict row (see R1)"
+            else:
+                why = f"verdict is '{v.get(i)}'"
             hard.append(("R6", f"{i} listed as [IMP] failure but {why}"))
         if under_imp:
             hard.append(("R6", f"[{markers['IMP']}] items with partial/no missing from the "

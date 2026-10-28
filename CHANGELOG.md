@@ -147,7 +147,10 @@ who accepted the deviations.*
   vectors corrected (they are synthetic): red_r3, red_r4_wrong, red_s3
   gained the missing Important Failures rows for their failing [IMP]
   items (H3, H3, 0.6) so each still fails with exactly its own code
-  under the new R6.
+  under the new R6. Follow-up (same day): gate: failure-table ids read
+  from the first id-bearing cell only (free-text Evidence no longer
+  yields false ids such as 0.55); "verdict is 'None'" message replaced
+  with "has no verdict row (see R1)"; vectors 35 → 37.
 
 ### Backlog (pending)
 
