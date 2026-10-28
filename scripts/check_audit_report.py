@@ -60,6 +60,11 @@ by the same rules; everything is normalized to the English canonical forms
 before any check runs. The gate output reports which language was recognized
 for the standard and for the report ("languages: report=ru, standard=ru").
 
+Messages name the actual standard file (--standard path, or "STANDARD.md" for
+a git-tag resolution) and the criticality marker in the standard's language:
+"marked [ВАЖ] in translations/STANDARD_RU.md" when checked against the
+Russian standard, "marked [IMP] in STANDARD.md" otherwise.
+
 Usage:
   python3 check_audit_report.py REPORT.md [--standard PATH]
       [--standard-version TAG] [--strict] [--format json]
@@ -256,9 +261,18 @@ def _has_evidence_marking(text: str) -> bool:
 
 WARNINGS_ZERO_RE = re.compile(r"(?im)^\s*#*\s*\*{0,2}\s*warnings\*{0,2}\s*:\*{0,2}\s*0\b(?![-.\d])")
 
+# How criticality markers are shown in gate messages: in the language of the
+# standard being checked against. English standard -> [CRIT]/[IMP]/[REC];
+# Russian standard -> [КРИТ]/[ВАЖ]/[РЕК].
+MARKERS_EN = {"CRIT": "CRIT", "IMP": "IMP", "REC": "REC", "?": "?"}
+MARKERS_RU = {"CRIT": "КРИТ", "IMP": "ВАЖ", "REC": "РЕК", "?": "?"}
 
-def check(report_text: str, standard_text: str) -> dict:
+
+def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md") -> dict:
     std = parse_standard(standard_text)
+    # standard_ref: how the standard file is named in gate messages — the
+    # --standard path when given, "STANDARD.md" for a git-tag resolution.
+    markers = MARKERS_RU if detect_standard_language(standard_text) == "ru" else MARKERS_EN
     verdicts, protocol, declared_crit, guarded, checked, section_claims = parse_report(report_text)
     hard, soft = [], []
     v = {i: vs[0][0] for i, vs in verdicts.items() if i in std}
@@ -294,7 +308,7 @@ def check(report_text: str, standard_text: str) -> dict:
     if dup:
         hard.append(("R1", f"items with more than one verdict row: {', '.join(dup)}"))
     if unknown:
-        hard.append(("R1", f"item ids not in STANDARD.md: {', '.join(unknown)}"))
+        hard.append(("R1", f"item ids not in {standard_ref}: {', '.join(unknown)}"))
 
     # R2 crit list
     computed_crit = {i for i, verdict in v.items() if verdict in FAILING and std[i] == "CRIT"}
@@ -303,10 +317,12 @@ def check(report_text: str, standard_text: str) -> dict:
     over = sorted(declared_crit - computed_crit, key=_key)
     under = sorted(computed_crit - declared_crit, key=_key)
     for i in over:
-        why = f"marked [{std.get(i, '?')}] in STANDARD.md" if std.get(i) != "CRIT" else f"verdict is '{v.get(i)}'"
+        why = (f"marked [{markers.get(std.get(i, '?'), std.get(i, '?'))}] in {standard_ref}"
+               if std.get(i) != "CRIT" else f"verdict is '{v.get(i)}'")
         hard.append(("R2", f"{i} listed as [CRIT] failure but {why}"))
     if under:
-        hard.append(("R2", "[CRIT] items with partial/no missing from the CRIT failure list: " + ", ".join(under)))
+        hard.append(("R2", f"{markers['CRIT']} items with partial/no missing from the {markers['CRIT']} "
+                           f"failure list: " + ", ".join(under)))
 
     # R3 protocol
     if not protocol:
@@ -422,7 +438,8 @@ def main(argv=None) -> int:
         result.update({"standard_items": 0, "computed_crit_failures": [], "expected_verdict": None,
                        "j3_guarded_items": [], "skipped": "no standard resolved: R1-R4 and S3 skipped"})
     else:
-        r = check(report_text, standard_text)
+        r = check(report_text, standard_text,
+                  standard_ref=args.standard if args.standard else "STANDARD.md")
         result.update(r)
 
     red = bool(result["hard"]) or (args.strict and bool(result["soft"]))

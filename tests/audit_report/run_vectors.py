@@ -7,7 +7,10 @@ Soft vectors are checked twice: default (soft reported, exit 0) and --strict
 (soft fails, exit 1).
 
 GREEN vectors must come out clean (no hard, no soft). RED vectors must fail
-with exactly the designed finding codes — no more, no less.
+with exactly the designed finding codes — no more, no less. Two RU vectors are
+also re-run against the Russian standard itself (--standard
+translations/STANDARD_RU.md; the PASS line shows [standard=ru], and the R2
+message must name the RU file and the RU marker).
 
 Usage: python3 tests/audit_report/run_vectors.py
 Exit 0 = all vectors behave as designed; exit 1 = a deviation (list printed).
@@ -24,6 +27,7 @@ GATE = REPO / "scripts" / "check_audit_report.py"
 VEC = Path(__file__).resolve().parent
 
 STD = ["--standard-version", "v1.8.1"]
+RU_STD = ["--standard", "translations/STANDARD_RU.md"]
 
 # (file, extra args, expected exit, expected hard codes, expected soft codes)
 CASES = [
@@ -55,7 +59,20 @@ CASES = [
     ("ru_red_r2_inflation.md",   STD, 1, {"R2"}, set()),
     ("ru_red_r3_text_crit.md",   STD, 1, {"R3"}, set()),
     ("ru_red_r4_softened.md",    STD, 1, {"R4"}, set()),
+    # The same two RU vectors re-run against the Russian standard itself
+    # (--standard translations/STANDARD_RU.md): the gate output must show
+    # standard=ru, and the R2 message must name the RU file and the RU marker.
+    ("ru_green_mixed.md",        RU_STD, 0, set(), set()),
+    ("ru_red_r2_inflation.md",   RU_STD, 1, {"R2"}, set()),
 ]
+
+# Required substring in a gate message for the given run (message-level checks
+# beyond exit/codes: gate messages name the actual standard file and the
+# criticality marker in the standard's language).
+MSG_EXPECT = {
+    ("ru_red_r2_inflation.md", tuple(RU_STD)):
+        "marked [ВАЖ] in translations/STANDARD_RU.md",
+}
 
 
 def main() -> int:
@@ -72,6 +89,7 @@ def main() -> int:
             continue
         got_hard = {c for c, _ in res["hard"]}
         got_soft = {c for c, _ in res["soft"]}
+        messages = " | ".join(m for _, m in res["hard"] + res["soft"])
         problems = []
         if proc.returncode != want_exit:
             problems.append(f"exit {proc.returncode} != {want_exit}")
@@ -79,6 +97,9 @@ def main() -> int:
             problems.append(f"hard {sorted(got_hard)} != {sorted(want_hard)}")
         if got_soft != want_soft:
             problems.append(f"soft {sorted(got_soft)} != {sorted(want_soft)}")
+        want_msg = MSG_EXPECT.get((name, tuple(args)))
+        if want_msg and want_msg not in messages:
+            problems.append(f"message does not contain {want_msg!r}")
         if problems:
             print(f"FAIL {name} {args}: " + "; ".join(problems))
             for c, m in res["hard"]:
@@ -86,7 +107,9 @@ def main() -> int:
             failures += 1
         else:
             tag = "GREEN" if want_exit == 0 and not want_soft else ("soft" if not want_hard else "RED")
-            print(f"PASS {tag:5} {name} {(' ' + ' '.join(args)) if args else ''}")
+            std_lang = res.get("standard_language")
+            suffix = f" [standard={std_lang}]" if std_lang else ""
+            print(f"PASS {tag:5} {name} {(' ' + ' '.join(args)) if args else ''}{suffix}")
     print(f"{len(CASES) - failures}/{len(CASES)} vector runs behave as designed")
     return 1 if failures else 0
 

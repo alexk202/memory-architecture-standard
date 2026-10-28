@@ -41,8 +41,14 @@ gate has been through a live audit, owner decision.*
   First live use: re-audit of a local assistant against v1.8.1
   (2026-10-28). The gate caught a missing [CRIT] entry (R2), forced
   protocol recounts (R3), and blocked a softened overall verdict (a
-  [CRIT] partial scored as a failure). Russian-language support
-  (markers, verdicts, labels, headings) added after this run.
+   [CRIT] partial scored as a failure). Russian-language support
+   (markers, verdicts, labels, headings) added after this run.
+   Follow-up: the gate output reports the recognized language for the
+   standard and the report ("languages: report=ru, standard=ru"), and
+   gate messages name the actual standard file and the criticality
+   marker in the standard's language ("marked [ВАЖ] in
+   translations/STANDARD_RU.md" when checked against the Russian
+   standard; "marked [IMP] in STANDARD.md" for a tag resolution).
 - **examples/AUDIT_REPORT_TEMPLATE.md** — header fields (Standard
   version; Audited version: SHA | no-SHA with reason and
   reconstruction; Audit type: static | behavioral | mixed; Warnings:
@@ -73,7 +79,10 @@ gate has been through a live audit, owner decision.*
   RED R2 — an [IMP] item listed in "Провалы [КРИТ]"; RED R3 — text
   instead of a number in the Failed [CRIT] column; RED R4 — a [CRIT]
   partial with the softened "ПРОХОДИТ С ОГОВОРКАМИ" verdict. The
-  external-project report is deliberately NOT committed.
+  external-project report is deliberately NOT committed. The runner also
+  re-runs the RU GREEN and RU R2 vectors against the Russian standard
+  itself (--standard translations/STANDARD_RU.md; the PASS line shows
+  [standard=ru]) — 27 runs.
 - docs/proposals/PROPOSAL_audit_report_gate.md — the proposal
   (incident anonymized per the name policy).
 - Gate run on examples/AUDIT_REPORT_2026-09-01.md against v1.2
