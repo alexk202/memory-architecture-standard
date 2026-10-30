@@ -6,7 +6,15 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
-Target: 1.8.2 (tooling and template only; checklist unchanged at 96).
+Target: 1.8.2 (tooling, template and docs only; checklist unchanged at 96).
+
+### Added (docs, 2026-10-30)
+
+- **docs/QUICK_CHECK.md**: an entry page with 12 [CRIT] items of v1.8.1
+  (0.1, A1, A2, I13, F1, C1, C4, D8, E1, E7, G1, I6), each with a symptom,
+  a five-minute check, a pass criterion and a link to its section. No new
+  norms; item texts unchanged; checklist unchanged at 96. Linked from the
+  README Quick Start.
 
 ### Added (audit-report consistency gate, 2026-10-27)
 

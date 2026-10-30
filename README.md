@@ -44,6 +44,8 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 
 ## Quick Start
 
+> New here? Start with the [Quick Check](docs/QUICK_CHECK.md): 12 critical items with a symptom, a five-minute check and a pass criterion for each, about one hour in total.
+
 1. Download [`STANDARD.md`](STANDARD.md) (English) or [`translations/STANDARD_RU.md`](translations/STANDARD_RU.md) (Russian)
 2. Start with **Section 0 (System Map)** — without it, other sections are unreliable
 3. Work through sections A–K, marking each item: `yes` / `partial` / `no` / `n/a`
