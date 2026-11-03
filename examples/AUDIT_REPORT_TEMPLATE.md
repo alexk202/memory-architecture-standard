@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.8.1
+**Standard version:** MAQS v1.9
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Audited version:** <commit SHA> — or — no-SHA: <reason>; reconstructed as <SHA> by <method>
@@ -101,6 +101,8 @@ Guarded item: J3 only — inherited criticality (§2.2 p.4): a failing J3 guardi
 | **D7** | | | | |
 | **D8** | | | | |
 | **D9** | | | | |
+| **D10** | | | | |
+| **D11** | | | | |
 | **E1** | | | | |
 | **E2** | | | | |
 | **E3** | | | | |
@@ -168,7 +170,7 @@ Guarded item: J3 only — inherited criticality (§2.2 p.4): a failing J3 guardi
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
 | C. Growth Management | 8 | | | | | |
-| D. Retrieval | 9 | | | | | |
+| D. Retrieval | 11 | | | | | |
 | E. Context Assembly | 13 | | | | | |
 | F. Feedback Loop | 8 | | | | | |
 | G. Isolation | 7 | | | | | |

@@ -80,19 +80,21 @@ CASES = [
     # RU vectors re-run against the Russian standard itself
     # (--standard translations/STANDARD_RU.md): the gate output must show
     # standard=ru, and the R2/R6 messages must name the RU file and the RU
-    # marker (MSG_EXPECT below).
-    ("ru_green_mixed.md",        RU_STD, 0, set(), set()),
-    ("ru_red_r2_inflation.md",   RU_STD, 1, {"R2"}, set()),
-    ("ru_red_r6_imp_inflation.md", RU_STD, 1, {"R6"}, set()),
+    # marker (MSG_EXPECT below). The *_98 variants carry the 98-item
+    # checklist (D10, D11) and track the working RU mirror; the originals
+    # stay pinned to the v1.8.1 tag (96 items) for the STD runs above.
+    ("ru_green_mixed_98.md",        RU_STD, 0, set(), set()),
+    ("ru_red_r2_inflation_98.md",   RU_STD, 1, {"R2"}, set()),
+    ("ru_red_r6_imp_inflation_98.md", RU_STD, 1, {"R6"}, set()),
 ]
 
 # Required substring in a gate message for the given run (message-level checks
 # beyond exit/codes: gate messages name the actual standard file and the
 # criticality marker in the standard's language).
 MSG_EXPECT = {
-    ("ru_red_r2_inflation.md", tuple(RU_STD)):
+    ("ru_red_r2_inflation_98.md", tuple(RU_STD)):
         "marked [ВАЖ] in translations/STANDARD_RU.md",
-    ("ru_red_r6_imp_inflation.md", tuple(RU_STD)):
+    ("ru_red_r6_imp_inflation_98.md", tuple(RU_STD)):
         "marked [РЕК] in translations/STANDARD_RU.md",
 }
 

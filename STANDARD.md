@@ -1,7 +1,7 @@
 # Memory Architecture Quality Standard for LLM Assistants
 
 **Format:** Audit checklist — place in front of you and verify item by item.
-**Version:** 1.8.1 (2026-10-27)
+**Version:** 1.9 (2026-11-03)
 **Scope:** Any LLM-based assistants and agents with long-term memory (dialog, episodic, semantic, vector, graph, multimodal), regardless of stack and platform.
 
 ---
@@ -170,7 +170,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **A1** All external sources (files from watched directories, web content, images, output from other agents) pass a trust filter before being written to memory. Identity extraction distinguishes between the chat speaker's self-introduction and first-person references in attached file content or relayed messages from other agents: a file's first-person text is not the speaker. **[CRIT]**
 - [ ] **A2** Secrets (keys, tokens, passwords, personal data) are detected and excluded before indexing and vectorization. Detection is verified against secrets adjacent to other characters in any context, not only free-standing tokens (e.g., a token inside a URL path after an identifier). **[CRIT]**
 - [ ] **A3** Service content (logs, diagnostic reports, service markers, prompts) is flagged and excluded from context assembly (while it may remain in history). Service and operational events (startup/shutdown markers, health snapshots) are not written into user memory stores under synthetic scope keys. Where legacy records exist, they are typed and invisible to every retrieval reader, including cross-scope scans. **[CRIT]**
-- [ ] **A4** Meaning extraction does not conflate form with meaning: code fragments, syntax, paths, and technical markers do not become "concepts" or "memories." **[IMP]**
+- [ ] **A4** Meaning extraction does not conflate form with meaning: code fragments, syntax, paths, and technical markers do not become "concepts" or "memories." Records produced by a degraded extraction path (extractor unavailable, fallback, timeout) are marked as such, demoted or segregated in ranking, and excluded from derived structures (graphs, indexes). An unmarked fallback placeholder (synthetic title + raw text) occupying top retrieval slots is indistinguishable from curated memory and propagates the degradation into every derived surface. **[IMP]**
 - [ ] **A5** For each record, provenance is captured: source, time, authoring agent, session. Provenance is required for all write channels, including external sync, attachments, and plugin inputs; provenance validation enforced only on the primary input path does not satisfy this item. **[IMP]**
 - [ ] **A6** Records from untrusted sources receive a lowered weight or are placed in a separate trust zone. **[IMP]**
 - [ ] **A7** Content embedded in multimodal inputs (text in images, file metadata) passes the same validation as explicit text. **[CRIT]**
@@ -189,7 +189,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **C1** For each store, limits or a retention policy are defined (maximum volume, history depth, overflow behavior). Diagnostic artifacts about memory (context snapshots, self-report dumps, diagnostic exchanges) are stores for growth-map purposes (Glossary: Store): retention policy, size caps, isolation from test records. **[CRIT]**
 - [ ] **C2** Re-indexing/rebuild is idempotent: a repeated run does not multiply records. **[CRIT]**
 - [ ] **C3** Quotas are defined: single record size, records per session/source, total volume per container. **[IMP]**
-- [ ] **C4** Vector index is synchronized with source: deletion/suppression of a record is reflected in the index; operation order (clean source → rebuild index) is defined and enforced. **[CRIT]**
+- [ ] **C4** Derived representations are synchronized with source: deletion, content update, or identifier change of a record is reflected in ALL derived representations (index entries, graph nodes, stored embedding fields, derived timestamps); operation order (clean source → rebuild index) is defined and enforced. A content migration that updates text without recomputing derived vectors, or an identifier-schema migration that leaves derived records orphaned while considering them "already synced" via stamps, is the same defect. Sync is verified by set-difference between source and derived ids, not assumed from migration stamps; stamps are invalidated by identifier-schema changes. **[CRIT]**
 - [ ] **C5** Caches (RAM structures, summarization caches) have TTL or an invalidation mechanism and are included in the growth map. **[IMP]**
 - [ ] **C6** Volume dynamics are monitored; anomalies (order-of-magnitude growth in a single operation) trigger alerts. **[IMP]**
 - [ ] **C7** Multimodal input deduplication by hash does not create unbounded counter growth and does not allow "flooding" memory freshness with a stream of unique variants. **[IMP]**
@@ -206,6 +206,8 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 - [ ] **D7** Externally driven importance suppression (archival by external content, marking a session as "resolved" by user reply) is bounded by thresholds, freshness protection, and current scope of action. All readers of the same store apply a uniform decay/side-effect policy at read time. **[CRIT]**
 - [ ] **D8** The embedding model matches the language(s) of the data. When the embedding model changes, embedding versions are explicitly tracked and compatibility is verified. Stores using incompatible embeddings are re-indexed or migrated before mixed-model retrieval is allowed. Incompatible embedding dimensions must produce an explicit rejection with diagnostics, not a burst of warnings during search. Pinned axes: incompatible dimensions map to A3 × B1 + C2 (type mismatch × hard failure × validation rejection), not A9 × B2 — 15 of 15 incidents were categorized on the wrong axis pair. The migration-or-version-marker contract covers all scored/ranked representations, not only embedding dimensions: mixed scales in one sortable column (importance, confidence, similarity) are prohibited without a version marker. **[CRIT]**
 - [ ] **D9** Results from external sources (web search, file read, RAG) are filtered against the active semantic context of the current session before entering context assembly. A keyword match with zero conceptual relevance to the current dialog is marked as low-relevance or excluded. Without this filter, a query for "Apple" during a programming discussion may return a pie recipe instead of a framework reference. **[IMP]**
+- [ ] **D10** Similarity computation contract is consistent across the scoring path: the index metric's direction (distance vs similarity) and normalization assumptions (unit-norm vs raw vectors) match between index construction, query encoding, and every score consumer (thresholds, weights, ranking). A distance-metric index whose values feed a "similarity ≥ X" gate, or a dot-product ranking where only one side is normalized, inverts or biases retrieval silently. **[CRIT]**
+- [ ] **D11** In retrieval over an index shared by multiple scopes (tenants, chats, users), per-scope filtering is applied before the top-K cut — or the extraction window is proportionally oversized. Selecting top-K globally and filtering afterwards lets other scopes' records silently consume the result window, degrading retrieval to fallback without any visible error. This is not cross-scope data access (G2) but slot displacement in a shared retrieval window. A near-single-scope data distribution masks the defect; it must be verified structurally, not by observed hit rates. **[IMP]**
 
 ## Section E. Context Assembly (ASSEMBLY)
 
@@ -299,7 +301,7 @@ Diagnostic scripts must be **integrated into the system**, not exist as separate
 
 ## Supplementary Recommendations
 
-Not checklist items and not counted in the 96 (category SUPP, docs/ADMISSION_CRITERIA.md).
+Not checklist items and not counted in the 98 (category SUPP, docs/ADMISSION_CRITERIA.md).
 
 **SUPP-EXT-01** External code-semantics tools: agents without built-in semantic code navigation (symbol/references lookup, project memory) are strongly recommended to use external tools of the Serena class (LSP-based semantic servers, semantic search, project-scoped memory). Rationale: flat, file-by-file audit loses cross-module relationships (proxy calls, dynamic imports, duplicated logic) — the class of errors invisible to line-level review. Constraint: valid only in read-only mode with respect to the audited system, with tool state kept external (P10-compatible); any tool with write access to the audited store is out of scope of this recommendation. **[REC]**
 

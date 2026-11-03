@@ -142,7 +142,8 @@ Candidate
 
 The standard had **74** items at v1.0, **93** at v1.6, **96** at
 v1.7, and stays at **96** at v1.8 (extension release: expansions
-only, no new numbered items). Growth rate:
+only, no new numbered items) and reaches **98** at v1.9 (two new
+retrieval items: D10, D11). Growth rate:
 
 | Release | Items | Δ | Source |
 |---|---|---|---|
@@ -156,6 +157,7 @@ only, no new numbered items). Growth rate:
 | v1.7 | 96 | +3 | 0.8, E13, I16 |
 | v1.8 | 96 | 0 | Extensions only (15 items expanded + §2.2 methodology; SUPP-EXT-01 reclassified as non-counted SUPP) |
 | v1.8.1 | 96 | 0 | criticality calibration |
+| v1.9 | 98 | +2 | D10 similarity computation contract, D11 scope isolation in shared retrieval index |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per

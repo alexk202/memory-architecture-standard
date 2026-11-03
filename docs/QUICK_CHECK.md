@@ -1,6 +1,6 @@
-# Quick Check: 12 Critical Items for AI Memory
+# Quick Check: 13 Critical Items for AI Memory
 
-**Standard:** MAQS v1.8.1 · 12 of 96 items, all marked [CRIT] · about one hour
+**Standard:** MAQS v1.9 · 13 of 98 items, all marked [CRIT] · about one hour
 
 This page is for anyone who builds or runs an assistant or agent with long-term memory, local or hosted, and wants a first look before a full audit.
 
@@ -77,7 +77,7 @@ Each item has four parts:
 
 **Full text:** [Section C](../STANDARD.md#section-c-growth-management-growth)
 
-## 7. Make deletion reach the vector index (C4)
+## 7. Derived representations (index, graph, embeddings) sync with source on deletion, content update, and id change (C4)
 
 **Symptom:** A deleted memory still comes back in search results.
 
@@ -97,7 +97,17 @@ Each item has four parts:
 
 **Full text:** [Section D](../STANDARD.md#section-d-retrieval-ranking-and-gating-retrieval)
 
-## 9. No blind truncation (E1)
+## 9. Check the similarity contract end to end (D10)
+
+**Symptom:** Retrieval returns clearly irrelevant records, or a similarity threshold gate admits everything (or nothing) — with no errors anywhere in the logs.
+
+**Check:** Find the vector index metric (L2 / inner product / cosine). Trace one query end to end: which metric and normalization the index was built with, how the query is encoded (normalized or raw), and how every score consumer — threshold gates, weights, ranking — interprets the number.
+
+**Pass:** A distance-metric score never feeds a "similarity ≥ X" gate; a dot-product ranking normalizes both sides or states the asymmetry explicitly. The contract is the same at index build time, at query time, and in every consumer.
+
+**Full text:** [Section D](../STANDARD.md#section-d-retrieval-ranking-and-gating-retrieval)
+
+## 10. No blind truncation (E1)
 
 **Symptom:** Content in the assembled context is cut off mid-word or mid-sentence.
 
@@ -107,7 +117,7 @@ Each item has four parts:
 
 **Full text:** [Section E](../STANDARD.md#section-e-context-assembly-assembly)
 
-## 10. Trusted markers can't be imitated (E7)
+## 11. Trusted markers can't be imitated (E7)
 
 **Symptom:** Text from memory shows up in the prompt looking like a system or memory header.
 
@@ -117,7 +127,7 @@ Each item has four parts:
 
 **Full text:** [Section E](../STANDARD.md#section-e-context-assembly-assembly)
 
-## 11. Prove isolation by trying to break it (G1)
+## 12. Prove isolation by trying to break it (G1)
 
 **Symptom:** Responses carry traces of another user's, agent's or topic's data.
 
@@ -131,7 +141,7 @@ Each item has four parts:
 
 **Full text:** [Section G](../STANDARD.md#section-g-isolation-and-trust-boundaries-isolation)
 
-## 12. Lock the consoles (I6)
+## 13. Lock the consoles (I6)
 
 **Symptom:** A web UI, dashboard or admin panel of the assistant or its memory stack opens without a login, sometimes from the local network.
 
@@ -145,7 +155,7 @@ Each item has four parts:
 
 ## Next steps
 
-- The full checklist: [STANDARD.md](../STANDARD.md) (96 items; Russian: [STANDARD_RU.md](../translations/STANDARD_RU.md)).
+- The full checklist: [STANDARD.md](../STANDARD.md) (98 items; Russian: [STANDARD_RU.md](../translations/STANDARD_RU.md)).
 - How to run a full audit: [AUDIT_GUIDE.md](AUDIT_GUIDE.md).
 - The report template: [AUDIT_REPORT_TEMPLATE.md](../examples/AUDIT_REPORT_TEMPLATE.md).
 
