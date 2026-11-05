@@ -6,6 +6,37 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Fixed (verdict rules and Audit Result Protocol, 2026-11-05)
+
+*Origin: an external audit of the working tree against v1.9 — the standard's
+own rules and protocol table had drifted from the checklist.*
+
+- **Verdict rules: section J had no operating consequence.** Rule 1 covered
+  sections 0, A, B, E, F; rule 2 covered C, D, G, H, I. A [CRIT] failure in
+  J (J1, or J3 with inherited [CRIT]) still yielded DOES NOT PASS but had no
+  stated operating consequence. Rule 2 now includes J and names
+  process-level compensating controls for it; an inherited-[CRIT] J3
+  failure takes the rule of the guarded item's section. Added the
+  invariant: every section containing [CRIT] items is covered by exactly
+  one of rules 1–2. (found during an external audit)
+- **Audit Result Protocol table: section D item count.** The table listed
+  D = 9, stale since D10 and D11 were added; corrected to D = 11. The table
+  total now reconciles to 98. Enforced by `scripts/check_audit_report.py`:
+  new hard check R8 (standard-internal consistency, `--standard`
+  resolutions — git-tag resolutions audit reports against immutable
+  snapshots and skip R8, with the skip reported) verifies both invariants:
+  every section with [CRIT] items is covered by exactly one verdict rule,
+  and the standard's own protocol table reconciles with the parsed
+  checklist per-section and in total. Two new vectors
+  (red_r8_rule_gap, red_r8_table_drift, synthetic standards carry the exact
+  defect shapes); run_vectors 37 → 39.
+
+### Notes (verdict rules and Audit Result Protocol, 2026-11-05)
+
+- Normative clarification without changes to the item set, item tags or
+  pass/fail logic.
+- Protocol table updated: D = 11 (EN + RU).
+
 ### Backlog (pending)
 
 - Backlog-only (not scheduled for 1.9): evidence linter for file:line

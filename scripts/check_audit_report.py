@@ -42,6 +42,21 @@ Hard checks (exit 1 on any failure):
   R7 deviation-items  every id in the Accepted Deviations table is a checklist
                   item with a partial/no verdict — there must be something
                   to accept.
+  R8 standard      the STANDARD is internally consistent, so the report is
+                  checked against a rulebook that actually reconciles:
+                  (a) every section containing [CRIT] items is covered by
+                  exactly one of the verdict rules 1-2 (sections parsed from
+                  the standard's "Verdict rules" / «Правила вердикта» block;
+                  rule 1: unsafe-until-remediated sections, rule 2: operate
+                  with compensating controls), a rule naming no section list
+                  is a finding, a section named by both rules is a finding;
+                  (b) the standard's own Audit Result Protocol table matches
+                  the parsed checklist: per-section item counts equal, total
+                  equals the item count, no rows for sections without items.
+                  R8 runs only when the standard is a working file
+                  (--standard PATH): git-tag resolutions audit reports
+                  against immutable historical snapshots and skip R8 (the
+                  skip is reported in the output).
 
 Soft checks (reported, exit code unaffected unless --strict):
   S1 evidence-status  a static audit should mark verdicts as static implementation
@@ -147,6 +162,18 @@ IMP_HEADING_RE = r"^#{2,3}\s*(?:\[IMP\]|Important|Провалы\s*\[(?:ВАЖ)\
 DEV_HEADING_RE = r"^#{2,3}\s*(?:Accepted\s+Deviations|Принятые\s+отступления)[^\n]*$"
 ACCEPTED_BY_RE = re.compile(r"accepted\s+by\b|кем\s+принято\b", re.IGNORECASE)
 AUDITOR_RE = re.compile(r"\*{0,2}Auditor\*{0,2}:\*{0,2}\s*([^\n|]+)", re.IGNORECASE)
+
+# R8 (standard-internal consistency): the verdict-rules block and the
+# standard's own Audit Result Protocol table. The rules are parsed from the
+# standard's prose: rule lines "1." / "2." with a comma-separated section
+# list ("sections 0, A, B, E, F" / «из разделов 0, A, B, E, F»); the protocol
+# table is the standard's template table (count cells empty there, unlike a
+# filled report table).
+RULES_LABEL_RE = re.compile(r"\*\*(?:Verdict\s+rules|Правила\s+вердикта):?\*\*")
+RULE_LINE_RE = re.compile(r"^\s*([123])\.\s")
+SEC_LIST_RE = re.compile(r"(?<![\w.])(?:0|[A-J])(?:\s*,\s*(?:0|[A-J]))+")
+STD_PROTO_HEADING_RE = r"^#{1,3}\s*(?:Audit\s+Result\s+Protocol|Протокол\s+результата\s+аудита)\b"
+STD_PROTO_ROW_RE = re.compile(r"^\|\s*(?P<sec>0|[A-J])\.\s*[^|]*\|\s*(?P<items>\d+)\s*\|")
 
 # Language detection (informational, reported in the gate output; both
 # languages parse identically — this only says which one was recognized).
@@ -272,6 +299,42 @@ def declared_ids(rows: list[list[str]], ncells: int = 2) -> set[str]:
     return out
 
 
+def parse_verdict_rules(text: str):
+    """(rule1_sections, rule2_sections) from the standard's "Verdict rules" /
+    «Правила вердикта» block; None for a rule line naming no parseable
+    section list; (None, None) when the block itself is not found."""
+    m = RULES_LABEL_RE.search(text)
+    if not m:
+        return None, None
+    rest = text[m.end():]
+    nxt = re.search(r"^#{1,3} ", rest, re.MULTILINE)
+    block = rest[: nxt.start()] if nxt else rest
+    out = {1: None, 2: None}
+    for line in block.splitlines():
+        lm = RULE_LINE_RE.match(line)
+        if not lm or int(lm.group(1)) not in out:
+            continue
+        secs = None
+        for sm in SEC_LIST_RE.finditer(line):
+            toks = set(re.findall(r"0|[A-J]", sm.group(0)))
+            secs = toks if secs is None else secs | toks
+        out[int(lm.group(1))] = secs
+    return out[1], out[2]
+
+
+def parse_standard_protocol(text: str) -> dict[str, int]:
+    """Section -> declared item count from the standard's own Audit Result
+    Protocol table (the template table; the count cells are empty there,
+    unlike a filled report table)."""
+    block = block_after(text, STD_PROTO_HEADING_RE)
+    out: dict[str, int] = {}
+    for line in block.splitlines():
+        m = STD_PROTO_ROW_RE.match(line.strip())
+        if m:
+            out[m.group("sec")] = int(m.group("items"))
+    return out
+
+
 def parse_report(text: str):
     verdicts: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for line in text.splitlines():
@@ -333,7 +396,8 @@ MARKERS_EN = {"CRIT": "CRIT", "IMP": "IMP", "REC": "REC", "?": "?"}
 MARKERS_RU = {"CRIT": "КРИТ", "IMP": "ВАЖ", "REC": "РЕК", "?": "?"}
 
 
-def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md") -> dict:
+def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md",
+           standard_internal: bool = False) -> dict:
     std = parse_standard(standard_text)
     # standard_ref: how the standard file is named in gate messages — the
     # --standard path when given, "STANDARD.md" for a git-tag resolution.
@@ -516,12 +580,63 @@ def check(report_text: str, standard_text: str, standard_ref: str = "STANDARD.md
                     soft.append(("S4", f"{i} deviation accepted by the auditor; acceptance "
                                        f"belongs to the owner of the audited system"))
 
+    # R8 standard-internal consistency (hard, working-file standards only:
+    # --standard PATH; git-tag resolutions audit reports against immutable
+    # historical snapshots and skip R8). Both defects this check was built
+    # from were found in the working standard during an external audit:
+    # verdict rules that named no section for a [CRIT]-bearing section (J),
+    # and a protocol table stale against the parsed checklist (D = 9).
+    r8: list[tuple[str, str]] = []
+    if standard_internal:
+        crit_sections = sorted({section_of(i) for i, c in std.items() if c == "CRIT"})
+        r1, r2 = parse_verdict_rules(standard_text)
+        if r1 is None and r2 is None:
+            r8.append(("R8", f"verdict rules block not found in {standard_ref}"))
+        else:
+            for n, secs in ((1, r1), (2, r2)):
+                if secs is None:
+                    r8.append(("R8", f"verdict rule {n} in {standard_ref} does not name its sections"))
+            covered = set()
+            for secs in (r1, r2):
+                covered |= secs or set()
+            both = sorted((r1 or set()) & (r2 or set()))
+            gap = [s for s in crit_sections if s not in covered]
+            if both:
+                r8.append(("R8", f"sections covered by both verdict rules 1 and 2: {', '.join(both)}"))
+            if gap:
+                r8.append(("R8", f"sections with [{markers['CRIT']}] items not covered by any verdict rule: "
+                                 f"{', '.join(gap)} (rules 1-2 of {standard_ref})"))
+        declared = parse_standard_protocol(standard_text)
+        if not declared:
+            r8.append(("R8", f"Audit Result Protocol table not found or not parseable in {standard_ref}"))
+        else:
+            expect = Counter(section_of(i) for i in std)
+            for sec in SECTION_ORDER:
+                if not expect[sec]:
+                    continue
+                got = declared.get(sec)
+                if got is None:
+                    r8.append(("R8", f"{standard_ref} protocol table: section {sec} row missing"))
+                elif got != expect[sec]:
+                    r8.append(("R8", f"{standard_ref} protocol table: section {sec} declares "
+                                     f"{got} items, standard has {expect[sec]}"))
+            extra = [s for s in declared if not expect.get(s)]
+            if extra:
+                r8.append(("R8", f"{standard_ref} protocol table: rows for sections without items: "
+                                 f"{', '.join(sorted(extra))}"))
+            total = sum(declared.values())
+            if total != len(std):
+                r8.append(("R8", f"{standard_ref} protocol table: total {total} items, "
+                                 f"standard has {len(std)}"))
+        hard.extend(r8)
+
     return {
         "standard_items": len(std),
         "items_unparsed_criticality": [i for i, c in std.items() if c == "?"],
         "computed_crit_failures": sorted(computed_crit, key=_key),
         "expected_verdict": expected,
         "j3_guarded_items": sorted(guarded),
+        "r8": "checked" if standard_internal else "skipped (git-tag standard: immutable snapshot)",
         "hard": hard,
         "soft": soft,
     }
@@ -566,10 +681,12 @@ def main(argv=None) -> int:
         if _is_static_audit(head) and WARNINGS_ZERO_RE.search(report_text):
             result["soft"].append(("S2", "'Warnings: 0' in a static audit; use 'not collected'"))
         result.update({"standard_items": 0, "computed_crit_failures": [], "expected_verdict": None,
-                       "j3_guarded_items": [], "skipped": "no standard resolved: R1-R4 and S3 skipped"})
+                       "j3_guarded_items": [], "r8": "skipped (no standard resolved)",
+                       "skipped": "no standard resolved: R1-R4 and S3 skipped"})
     else:
         r = check(report_text, standard_text,
-                  standard_ref=args.standard if args.standard else "STANDARD.md")
+                  standard_ref=args.standard if args.standard else "STANDARD.md",
+                  standard_internal=args.standard is not None)
         result.update(r)
 
     red = bool(result["hard"]) or (args.strict and bool(result["soft"]))
@@ -588,6 +705,8 @@ def main(argv=None) -> int:
             print("WARNING: criticality not parsed for: " + ", ".join(result["items_unparsed_criticality"]))
         if result.get("skipped"):
             print(f"  skipped: {result['skipped']}")
+        if result.get("r8"):
+            print(f"  R8 (standard-internal consistency): {result['r8']}")
         print(f"computed [CRIT] failures ({len(result.get('computed_crit_failures', []))}): "
               + (", ".join(result.get("computed_crit_failures", [])) or "none"))
         if result.get("expected_verdict"):

@@ -351,7 +351,7 @@ System map completed:   yes / no (if no — audit is not complete)
 | A. Input validation   | 7  | | | | | |
 | B. Write integrity    | 6  | | | | | |
 | C. Growth             | 8 | | | | | |
-| D. Retrieval          | 9  | | | | | |
+| D. Retrieval          | 11 | | | | | |
 | E. Assembly           | 13 | | | | | |
 | F. Feedback loop      | 8  | | | | | |
 | G. Isolation          | 7  | | | | | |
@@ -372,10 +372,12 @@ Priority remediation order: ______
 
 **Verdict rules:**
 1. Failure of any [CRIT] in sections 0, A, B, E, F means: the architecture in its current form is unsafe for long-term memory accumulation — until remediation, data will be lost, poisoned, or reproduce garbage.
-2. [CRIT] failures in C, D, G, H, I permit operation only with compensating controls (monitoring, caller-side limits) and a remediation plan.
+2. [CRIT] failures in C, D, G, H, I, J permit operation only with compensating controls (monitoring, caller-side limits) and a remediation plan; for J the compensating controls are process-level: staged one-change-at-a-time rollout and a verified rollback path.
 3. The audit is valid until the next significant architectural change; after each change, affected sections are re-examined (full pass — on architecture generation change).
 
-Inherited criticality: a J3 failure whose guarded incident belongs to a [CRIT] item is scored [CRIT] and enters the [CRIT] failures list.
+Invariant: every section containing [CRIT] items is covered by exactly one of rules 1–2.
+
+Inherited criticality: a J3 failure whose guarded incident belongs to a [CRIT] item is scored [CRIT], enters the [CRIT] failures list, and takes the verdict rule of its guarded item's section (rule 1 or 2).
 
 ---
 

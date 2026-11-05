@@ -86,6 +86,17 @@ CASES = [
     ("ru_green_mixed_98.md",        RU_STD, 0, set(), set()),
     ("ru_red_r2_inflation_98.md",   RU_STD, 1, {"R2"}, set()),
     ("ru_red_r6_imp_inflation_98.md", RU_STD, 1, {"R6"}, set()),
+    # R8 (standard-internal consistency): hard, but only when the standard
+    # is a working file (--standard PATH) — the STD runs above are git-tag
+    # resolutions against immutable snapshots and skip R8, so their expected
+    # outcomes are unchanged. The synthetic standards carry the exact
+    # defect shapes found in the working tree during an external audit:
+    # verdict rules naming no section for a [CRIT]-bearing section (J), and
+    # a protocol table stale against the parsed checklist (D = 9).
+    ("red_r8_rule_gap.md",
+     ["--standard", "tests/audit_report/std_r8_rule_gap.md"], 1, {"R8"}, set()),
+    ("red_r8_table_drift.md",
+     ["--standard", "tests/audit_report/std_r8_table_drift.md"], 1, {"R8"}, set()),
 ]
 
 # Required substring in a gate message for the given run (message-level checks
@@ -96,6 +107,10 @@ MSG_EXPECT = {
         "marked [ВАЖ] in translations/STANDARD_RU.md",
     ("ru_red_r6_imp_inflation_98.md", tuple(RU_STD)):
         "marked [РЕК] in translations/STANDARD_RU.md",
+    ("red_r8_rule_gap.md", ("--standard", "tests/audit_report/std_r8_rule_gap.md")):
+        "not covered by any verdict rule: J",
+    ("red_r8_table_drift.md", ("--standard", "tests/audit_report/std_r8_table_drift.md")):
+        "section D declares 9 items, standard has 2",
 }
 
 
