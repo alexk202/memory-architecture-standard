@@ -6,6 +6,27 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Changed (preparation phase P8, 2026-11-09)
+
+*Origin: an independent rerun of a behavioral isolation test on an external
+memory layer. An exported provider API key took precedence over the endpoint
+declared in the harness config for the chat client, but not for the embedder,
+which reads the config directly. All storage channels passed and the run
+aborted on the first inference call with an invalid-model error, so the
+invalidation surfaced mid-run rather than at startup. Unsetting the variable
+reproduced the prior verdict artifact 1:1 — config hash and every verdict,
+counter and control unchanged. Measured and reproduced, so admitted as an
+extension of P8 per docs/ADMISSION_CRITERIA.md §2.3 and §3: no new number,
+preparation-phase gate phrase unchanged, checklist unchanged at 98.*
+
+- **Step P8 (Runtime environment awareness) extended:** the exported
+  environment variables that the audited system reads are now part of what the
+  auditor records before the run. A variable may take precedence over the
+  declared configuration and redirect a client silently, and that precedence
+  need not be uniform across components, so a run can break mid-way rather
+  than at startup. Such a run is VOID — neither a pass nor a failure of the
+  audited system. EN and RU mirrored.
+
 ### Fixed (verdict rules and Audit Result Protocol, 2026-11-05)
 
 *Origin: an external audit of the working tree against v1.9 — the standard's
@@ -74,6 +95,10 @@ own rules and protocol table had drifted from the checklist.*
 - Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
 - D1: punctuation normalization in lexical gate tokenization — awaits
   product lineage per §2.5; no development-lineage exception.
+- D8 extension candidate: the embedding-model marker written from the declared
+  configuration rather than from what actually served the request — vectors
+  from two models in one index under one marker. Same mechanism as the P8
+  lineage above, audited-system side; awaiting measured lineage (§2.5)
 
 ## [1.9] - 2026-11-03
 
