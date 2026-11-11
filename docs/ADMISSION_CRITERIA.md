@@ -158,6 +158,7 @@ retrieval items: D10, D11). Growth rate:
 | v1.8 | 96 | 0 | Extensions only (15 items expanded + §2.2 methodology; SUPP-EXT-01 reclassified as non-counted SUPP) |
 | v1.8.1 | 96 | 0 | criticality calibration |
 | v1.9 | 98 | +2 | D10 similarity computation contract, D11 scope isolation in shared retrieval index |
+| v1.9.1 | 98 | 0 | verdict rules clarification, protocol table D = 11, gate check R8, P8 extension |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per

@@ -6,6 +6,55 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Backlog (pending)
+
+- Backlog-only (not scheduled for 1.9): evidence linter for file:line
+  references — resolved against the audited commit (the SHA from the
+  report header), not the current tree; a --baseline delta mode for
+  re-audits; a generator for per-item verdict rows from CSV/YAML input
+- MAQS_BASE Stage 7: review of staged needs_review clusters
+  (webhook-secret Permission denied ×22, context-truncate ×25);
+  candidates pass the admission gate (docs/ADMISSION_CRITERIA.md §2),
+  growth budget (§5) and release sync checklist (§9) before entering
+  a release
+- E14 Edit-state verification (MAQS_BASE) — renumbered from E13
+  (v1.7); awaiting measured lineage
+- G8: Forgetting cascade (GDPR right to be forgotten —
+  coordinated deletion across all stores)
+- docs/VERIFICATION_QUERIES.md — example SQL/commands for
+  each [CRIT] item; expand with filesystem and process checks
+  (log sizes, orphaned index files, mtime divergence between
+  related stores), not only SQL; on live WAL databases the
+  before/after isolation guard compares rows/content, not the
+  file md5 (a checkpoint changes the hash at zero row delta,
+  producing a false failure signal)
+- docs/CONTEXT_PROVENANCE.md — provenance labels
+  (artifact_now / memory / model_output) in assembled context;
+  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
+  (feedback from personal AI assistant)
+- Section K: add "Tool" column with example verification tools
+- standard.json / standard.yaml — machine-readable version
+- CLI tool maqs audit — automated checking of verifiable items;
+  --read-only / --external as the only permitted production mode
+- Write-before-read verification (MAQS_BASE, H-section candidate)
+- Regex input bound (MAQS_BASE, A-section candidate)
+- Context overflow guard (MAQS_BASE, observation only)
+- Type contract verification (MAQS_BASE)
+- Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
+- D1: punctuation normalization in lexical gate tokenization — awaits
+  product lineage per §2.5; no development-lineage exception.
+- D8 extension candidate: the embedding-model marker written from the declared
+  configuration rather than from what actually served the request — vectors
+  from two models in one index under one marker. Same mechanism as the P8
+  lineage above, audited-system side; awaiting measured lineage (§2.5)
+
+## [1.9.1] - 2026-11-11
+
+*Checklist unchanged at 98: normative clarification of the verdict rules
+(section J gains an operating consequence), Audit Result Protocol table
+corrected to D = 11, gate check R8 enforcing both invariants, and an
+extension of preparation step P8. No items added, removed or retagged.*
+
 ### Changed (preparation phase P8, 2026-11-09)
 
 *Origin: an independent rerun of a behavioral isolation test on an external
@@ -57,48 +106,6 @@ own rules and protocol table had drifted from the checklist.*
 - Normative clarification without changes to the item set, item tags or
   pass/fail logic.
 - Protocol table updated: D = 11 (EN + RU).
-
-### Backlog (pending)
-
-- Backlog-only (not scheduled for 1.9): evidence linter for file:line
-  references — resolved against the audited commit (the SHA from the
-  report header), not the current tree; a --baseline delta mode for
-  re-audits; a generator for per-item verdict rows from CSV/YAML input
-- MAQS_BASE Stage 7: review of staged needs_review clusters
-  (webhook-secret Permission denied ×22, context-truncate ×25);
-  candidates pass the admission gate (docs/ADMISSION_CRITERIA.md §2),
-  growth budget (§5) and release sync checklist (§9) before entering
-  a release
-- E14 Edit-state verification (MAQS_BASE) — renumbered from E13
-  (v1.7); awaiting measured lineage
-- G8: Forgetting cascade (GDPR right to be forgotten —
-  coordinated deletion across all stores)
-- docs/VERIFICATION_QUERIES.md — example SQL/commands for
-  each [CRIT] item; expand with filesystem and process checks
-  (log sizes, orphaned index files, mtime divergence between
-  related stores), not only SQL; on live WAL databases the
-  before/after isolation guard compares rows/content, not the
-  file md5 (a checkpoint changes the hash at zero row delta,
-  producing a false failure signal)
-- docs/CONTEXT_PROVENANCE.md — provenance labels
-  (artifact_now / memory / model_output) in assembled context;
-  makes E6/E12/F7 mechanically verifiable, not discipline-dependent
-  (feedback from personal AI assistant)
-- Section K: add "Tool" column with example verification tools
-- standard.json / standard.yaml — machine-readable version
-- CLI tool maqs audit — automated checking of verifiable items;
-  --read-only / --external as the only permitted production mode
-- Write-before-read verification (MAQS_BASE, H-section candidate)
-- Regex input bound (MAQS_BASE, A-section candidate)
-- Context overflow guard (MAQS_BASE, observation only)
-- Type contract verification (MAQS_BASE)
-- Axis C mechanism taxonomy: docs/TAXONOMY.md (MAQS_BASE)
-- D1: punctuation normalization in lexical gate tokenization — awaits
-  product lineage per §2.5; no development-lineage exception.
-- D8 extension candidate: the embedding-model marker written from the declared
-  configuration rather than from what actually served the request — vectors
-  from two models in one index under one marker. Same mechanism as the P8
-  lineage above, audited-system side; awaiting measured lineage (§2.5)
 
 ## [1.9] - 2026-11-03
 
