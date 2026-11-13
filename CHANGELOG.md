@@ -12,27 +12,48 @@ All notable changes to the Memory Architecture Quality Standard.
   importance must be applied in bounded increments. A decay policy
   activated or resumed after a dormant period (a disabled feature, a
   fixed defect, a migrated store) must not apply the whole accumulated
-  elapsed time in a single pass: the first pass is limited by a
-  catch-up window, or the last-applied timestamp is rebased at
-  activation. Otherwise store-wide importance collapses to the floor
-  at once, layer promotion stops triggering, and ranking degenerates
-  to whatever secondary key remains — with no records lost and no
-  counters changed. Importance is an input to retrieval ranking, which
-  is what makes this memory-specific rather than scheduler hygiene.
-  Admitted by the gate (docs/ADMISSION_CRITERIA.md §2, all five
-  criteria; classified NEW ITEM, section D, +1 of the 5-item budget);
-  wording approved. Enters the checklist with the next release, which
-  moves the item count 98 → 99 across the standard, both protocol
-  tables, README, docs/QUICK_CHECK.md and the RU gate vectors in one
-  atomic commit (§9). Until then the checklist is 98 items and audits
-  run against v1.9.1. Sourced from live remediation of a personal AI
-  assistant's memory system: a dormant decay control, once fixed,
-  moved 97% of active records to the importance floor on its first
-  pass; a one-day catch-up cap left the store's mean importance
-  unchanged.
+  elapsed time in a single pass. The failure is not the drop itself:
+  decay applied to every record with the same elapsed value is a
+  monotonic transformation and leaves the ranking order intact. What
+  destroys the order is loss of discrimination — the floor, which
+  collapses many records onto one value, and per-layer decay rates,
+  which diverge further the larger the elapsed time. The requirement is
+  therefore that the first pass must not strip the ranking signal of
+  its discriminating power. Two remedies exist and they are not
+  equivalent: a bounded catch-up window preserves the dormant interval
+  and applies it across several passes, leaving importance temporarily
+  higher than the policy implies, while rebasing the last-applied
+  timestamp at activation discards the dormant interval outright.
+  Which of the two applies is a declared decision, not an
+  implementation accident: the audit records the semantics the system
+  claims and verifies that the code implements that one. Importance is
+  an input to retrieval ranking, which is what makes this
+  memory-specific rather than scheduler hygiene. Verification: an
+  elapsed-time clamp or an activation-time rebase on the decay path;
+  on a copy of the store, the share of active records reaching the
+  floor and the spread of the signal after one pass. Admitted by the
+  gate (docs/ADMISSION_CRITERIA.md §2, all five criteria; classified
+  NEW ITEM, section D, +1 of the 5-item budget); wording approved.
+  Enters the checklist with the next release, which moves the item
+  count 98 → 99 across the standard, both protocol tables, README,
+  docs/QUICK_CHECK.md and the RU gate vectors in one atomic commit
+  (§9). Until then the checklist is 98 items and audits run against
+  v1.9.1. Sourced from live remediation of a personal AI assistant's
+  memory system: a dormant decay control, once fixed, moved 97% of
+  active records to the importance floor on its first pass; a one-day
+  bound with the last-applied timestamp rebased on each pass — that
+  is, rebase semantics rather than a converging catch-up — left the
+  store's mean importance effectively unchanged.
 
 ### Backlog (pending)
 
+- Runtime observability of ranking-signal distribution drift: no
+  section I item covers it — I1 monitors memory contamination, I2
+  requires a metric per graceful fallback, neither watches the
+  distribution of a ranking signal (importance, confidence,
+  similarity) for collapse or loss of discrimination. Candidate for
+  section I; awaiting measured lineage from production observation,
+  not a one-off simulation on a copy (ADMISSION_CRITERIA §2.5, §4)
 - Backlog-only (not scheduled for 1.9): evidence linter for file:line
   references — resolved against the audited commit (the SHA from the
   report header), not the current tree; a --baseline delta mode for
