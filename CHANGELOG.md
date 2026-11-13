@@ -6,6 +6,31 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
+### Pending (admitted, not yet in the checklist)
+
+- **D12** Bounded catch-up decay [IMP] — time-driven suppression of
+  importance must be applied in bounded increments. A decay policy
+  activated or resumed after a dormant period (a disabled feature, a
+  fixed defect, a migrated store) must not apply the whole accumulated
+  elapsed time in a single pass: the first pass is limited by a
+  catch-up window, or the last-applied timestamp is rebased at
+  activation. Otherwise store-wide importance collapses to the floor
+  at once, layer promotion stops triggering, and ranking degenerates
+  to whatever secondary key remains — with no records lost and no
+  counters changed. Importance is an input to retrieval ranking, which
+  is what makes this memory-specific rather than scheduler hygiene.
+  Admitted by the gate (docs/ADMISSION_CRITERIA.md §2, all five
+  criteria; classified NEW ITEM, section D, +1 of the 5-item budget);
+  wording approved. Enters the checklist with the next release, which
+  moves the item count 98 → 99 across the standard, both protocol
+  tables, README, docs/QUICK_CHECK.md and the RU gate vectors in one
+  atomic commit (§9). Until then the checklist is 98 items and audits
+  run against v1.9.1. Sourced from live remediation of a personal AI
+  assistant's memory system: a dormant decay control, once fixed,
+  moved 97% of active records to the importance floor on its first
+  pass; a one-day catch-up cap left the store's mean importance
+  unchanged.
+
 ### Backlog (pending)
 
 - Backlog-only (not scheduled for 1.9): evidence linter for file:line
