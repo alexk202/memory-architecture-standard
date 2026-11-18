@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.9
+**Standard version:** MAQS v1.10
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Audited version:** <commit SHA> — or — no-SHA: <reason>; reconstructed as <SHA> by <method>
@@ -103,6 +103,7 @@ Guarded item: J3 only — inherited criticality (§2.2 p.4): a failing J3 guardi
 | **D9** | | | | |
 | **D10** | | | | |
 | **D11** | | | | |
+| **D12** | | | | |
 | **E1** | | | | |
 | **E2** | | | | |
 | **E3** | | | | |
@@ -170,7 +171,7 @@ Guarded item: J3 only — inherited criticality (§2.2 p.4): a failing J3 guardi
 | A. Input Validation | 7 | | | | | |
 | B. Write Integrity | 6 | | | | | |
 | C. Growth Management | 8 | | | | | |
-| D. Retrieval | 11 | | | | | |
+| D. Retrieval | 12 | | | | | |
 | E. Context Assembly | 13 | | | | | |
 | F. Feedback Loop | 8 | | | | | |
 | G. Isolation | 7 | | | | | |
@@ -240,4 +241,4 @@ with "Suggested Priorities (auditor's view, non-binding)" — no sprints, no sta
 
 ---
 
-*Generated using MAQS v1.9 Audit Report Template*
+*Generated using MAQS v1.10 Audit Report Template*

@@ -2,15 +2,15 @@
 
 **A practical audit checklist for LLM-based systems with persistent memory.**
 
-[![Version](https://img.shields.io/badge/version-1.9.1-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.10-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
-[![Items](https://img.shields.io/badge/checklist-98_items-orange.svg)]
+[![Items](https://img.shields.io/badge/checklist-99_items-orange.svg)]
 
 ---
 
 ## What Is This?
 
-A 98-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
+A 99-item audit checklist for any LLM-based assistant or agent that accumulates memory across sessions — dialog, episodic, semantic, vector, graph, or multimodal.
 
 Covers the full memory loop: ingestion → storage → retrieval → context assembly → model → output → feedback.
 
@@ -61,7 +61,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 | **A. Input Validation** | What enters memory — and what shouldn't | 7 |
 | **B. Write Integrity** | Idempotency, deduplication, transactions | 6 |
 | **C. Growth Management** | Limits, retention, cache invalidation | 8 |
-| **D. Retrieval** | Ranking, gating, embedding compatibility | 11 |
+| **D. Retrieval** | Ranking, gating, embedding compatibility | 12 |
 | **E. Context Assembly** | Summarization, budgets, position awareness, artifact separation | 13 |
 | **F. Feedback Loop** | Anti-recursion, echo prevention, authority laundering | 8 |
 | **G. Isolation** | Trust boundaries, domain separation, negative fixtures | 7 |
@@ -69,7 +69,7 @@ Each symptom maps to specific checklist items. See **Section K (Quick Diagnostic
 | **I. Observability** | Monitoring, recovery, diagnostics, warning dedup, escalation | 16 |
 | **J. Change Management** | One change at a time, rollback, baselines | 6 |
 | **K. Quick Diagnostics** | Symptom → probable defect mapping | — |
-| | **Total** | **98** |
+| | **Total** | **99** |
 
 ## Criticality Levels
 

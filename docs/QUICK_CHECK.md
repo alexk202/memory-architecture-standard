@@ -1,6 +1,6 @@
 # Quick Check: 13 Critical Items for AI Memory
 
-**Standard:** MAQS v1.9 · 13 of 98 items, all marked [CRIT] · about one hour
+**Standard:** MAQS v1.10 · 13 of 99 items, all marked [CRIT] · about one hour
 
 This page is for anyone who builds or runs an assistant or agent with long-term memory, local or hosted, and wants a first look before a full audit.
 
@@ -155,7 +155,7 @@ Each item has four parts:
 
 ## Next steps
 
-- The full checklist: [STANDARD.md](../STANDARD.md) (98 items; Russian: [STANDARD_RU.md](../translations/STANDARD_RU.md)).
+- The full checklist: [STANDARD.md](../STANDARD.md) (99 items; Russian: [STANDARD_RU.md](../translations/STANDARD_RU.md)).
 - How to run a full audit: [AUDIT_GUIDE.md](AUDIT_GUIDE.md).
 - The report template: [AUDIT_REPORT_TEMPLATE.md](../examples/AUDIT_REPORT_TEMPLATE.md).
 

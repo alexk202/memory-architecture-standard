@@ -6,45 +6,6 @@ All notable changes to the Memory Architecture Quality Standard.
 
 ## [Unreleased]
 
-### Pending (admitted, not yet in the checklist)
-
-- **D12** Bounded catch-up decay [IMP] — time-driven suppression of
-  importance must be applied in bounded increments. A decay policy
-  activated or resumed after a dormant period (a disabled feature, a
-  fixed defect, a migrated store) must not apply the whole accumulated
-  elapsed time in a single pass. The failure is not the drop itself:
-  decay applied to every record with the same elapsed value is a
-  monotonic transformation and leaves the ranking order intact. What
-  destroys the order is loss of discrimination — the floor, which
-  collapses many records onto one value, and per-layer decay rates,
-  which diverge further the larger the elapsed time. The requirement is
-  therefore that the first pass must not strip the ranking signal of
-  its discriminating power. Two remedies exist and they are not
-  equivalent: a bounded catch-up window preserves the dormant interval
-  and applies it across several passes, leaving importance temporarily
-  higher than the policy implies, while rebasing the last-applied
-  timestamp at activation discards the dormant interval outright.
-  Which of the two applies is a declared decision, not an
-  implementation accident: the audit records the semantics the system
-  claims and verifies that the code implements that one. Importance is
-  an input to retrieval ranking, which is what makes this
-  memory-specific rather than scheduler hygiene. Verification: an
-  elapsed-time clamp or an activation-time rebase on the decay path;
-  on a copy of the store, the share of active records reaching the
-  floor and the spread of the signal after one pass. Admitted by the
-  gate (docs/ADMISSION_CRITERIA.md §2, all five criteria; classified
-  NEW ITEM, section D, +1 of the 5-item budget); wording approved.
-  Enters the checklist with the next release, which moves the item
-  count 98 → 99 across the standard, both protocol tables, README,
-  docs/QUICK_CHECK.md and the RU gate vectors in one atomic commit
-  (§9). Until then the checklist is 98 items and audits run against
-  v1.9.1. Sourced from live remediation of a personal AI assistant's
-  memory system: a dormant decay control, once fixed, moved 97% of
-  active records to the importance floor on its first pass; a one-day
-  bound with the last-applied timestamp rebased on each pass — that
-  is, rebase semantics rather than a converging catch-up — left the
-  store's mean importance effectively unchanged.
-
 ### Backlog (pending)
 
 - Runtime observability of ranking-signal distribution drift: no
@@ -93,6 +54,37 @@ All notable changes to the Memory Architecture Quality Standard.
   configuration rather than from what actually served the request — vectors
   from two models in one index under one marker. Same mechanism as the P8
   lineage above, audited-system side; awaiting measured lineage (§2.5)
+
+## [1.10] - 2026-11-18
+
+*Checklist 98 → 99: D12 (retrieval). Item set changed — audits must run
+against v1.10; reports against v1.9 or v1.9.1 remain valid for their
+own item set.*
+
+### Added (bounded catch-up decay, 2026-11-18)
+
+- **D12** Bounded catch-up decay — time-driven suppression of importance
+  is applied in bounded increments; a decay policy activated or resumed
+  after a dormant period (a disabled feature, a fixed defect, a migrated
+  store) must not apply the whole accumulated elapsed time in a single
+  pass. The requirement is stated in terms of discrimination rather than
+  magnitude: decay applied with one elapsed value to every record is a
+  monotonic transformation and preserves the ranking order, while the
+  floor and per-layer decay rates destroy it. The two remedies — a
+  bounded catch-up window, which preserves the dormant interval, and a
+  rebase of the last-applied timestamp, which discards it — are not
+  equivalent; which one applies is a declared decision the audit verifies
+  against the code. [IMP] Sourced from live remediation of a personal AI
+  assistant's memory system: a dormant decay control, once fixed, moved
+  97% of active records to the importance floor on its first pass.
+
+### Changed (release sync, 2026-11-18)
+
+- `docs/ADMISSION_CRITERIA.md` §9: the release sync file list now names
+  `docs/QUICK_CHECK.md`, `examples/AUDIT_REPORT_TEMPLATE.md` and the RU
+  gate vectors under `tests/audit_report/` — three sync points it
+  previously omitted, each of which drifts silently when the item count
+  changes.
 
 ## [1.9.1] - 2026-11-11
 

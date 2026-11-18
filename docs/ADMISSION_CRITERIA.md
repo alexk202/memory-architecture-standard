@@ -142,8 +142,9 @@ Candidate
 
 The standard had **74** items at v1.0, **93** at v1.6, **96** at
 v1.7, and stays at **96** at v1.8 (extension release: expansions
-only, no new numbered items) and reaches **98** at v1.9 (two new
-retrieval items: D10, D11). Growth rate:
+only, no new numbered items), reaches **98** at v1.9 (two new
+retrieval items: D10, D11) and **99** at v1.10 (D12, bounded
+catch-up decay). Growth rate:
 
 | Release | Items | Δ | Source |
 |---|---|---|---|
@@ -159,6 +160,7 @@ retrieval items: D10, D11). Growth rate:
 | v1.8.1 | 96 | 0 | criticality calibration |
 | v1.9 | 98 | +2 | D10 similarity computation contract, D11 scope isolation in shared retrieval index |
 | v1.9.1 | 98 | 0 | verdict rules clarification, protocol table D = 11, gate check R8, P8 extension |
+| v1.10 | 99 | +1 | D12 bounded catch-up decay |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per
@@ -236,6 +238,9 @@ event recorded with divergent keys across documents.
 | `README.md` | Badge (`checklist-N_items`); intro sentence ("A N-item…"); section table (per-section counts + total row); docs section (new docs/) |
 | `CHANGELOG.md` | `[Unreleased]` section content; backlog updates (resolved/renumbered candidates) |
 | `docs/ADMISSION_CRITERIA.md` | Growth budget table (section 5) and its header sentence ("targets N at vX.Y") updated with the new release row |
+| `docs/QUICK_CHECK.md` | Standard version and item count in the header ("MAQS vX.Y · N of M items"); item count in "Next steps" |
+| `examples/AUDIT_REPORT_TEMPLATE.md` | "Standard version" field; footer line; one verdict row per new item; protocol-table section counts |
+| `tests/audit_report/*_98.md` | Verdict row per new item and protocol-table section counts — these vectors track the working RU mirror, not a git tag |
 
 ### Template
 
