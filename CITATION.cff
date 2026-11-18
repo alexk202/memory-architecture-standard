@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use or reference the MAQS standard, please cite it using the preferred citation below."
+title: "Memory Architecture Quality Standard (MAQS)"
+abstract: "A practical 99-item audit standard for evaluating persistent-memory architectures in LLM-based assistants and agents. Covers the system map, ingestion, write integrity, growth and retention, retrieval, context assembly, feedback loops, isolation, concurrency, observability, and change management."
+authors:
+  - family-names: Kossarev
+    given-names: Aleksandr
+version: "1.10"
+date-released: "2026-11-18"
+doi: 10.5281/zenodo.24342495
+license: CC-BY-SA-4.0
+repository-code: "https://github.com/alexk202/memory-architecture-standard"
+url: "https://github.com/alexk202/memory-architecture-standard"
+keywords:
+  - ai-memory
+  - llm
+  - persistent-memory
+  - memory-architecture
+  - memory-audit
+  - ai-agents
+  - retrieval
+  - quality-assurance
+preferred-citation:
+  type: standard
+  authors:
+    - family-names: Kossarev
+      given-names: Aleksandr
+  title: "Memory Architecture Quality Standard (MAQS)"
+  version: "1.10"
+  year: 2026
+  doi: 10.5281/zenodo.24342495
+  url: "https://github.com/alexk202/memory-architecture-standard"
