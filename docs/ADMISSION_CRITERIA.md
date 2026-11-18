@@ -144,7 +144,8 @@ The standard had **74** items at v1.0, **93** at v1.6, **96** at
 v1.7, and stays at **96** at v1.8 (extension release: expansions
 only, no new numbered items), reaches **98** at v1.9 (two new
 retrieval items: D10, D11) and **99** at v1.10 (D12, bounded
-catch-up decay). Growth rate:
+catch-up decay), unchanged at **99** at v1.10.1 (header version sync).
+Growth rate:
 
 | Release | Items | Δ | Source |
 |---|---|---|---|
@@ -161,6 +162,7 @@ catch-up decay). Growth rate:
 | v1.9 | 98 | +2 | D10 similarity computation contract, D11 scope isolation in shared retrieval index |
 | v1.9.1 | 98 | 0 | verdict rules clarification, protocol table D = 11, gate check R8, P8 extension |
 | v1.10 | 99 | +1 | D12 bounded catch-up decay |
+| v1.10.1 | 99 | 0 | standard header version sync, version-sync gate |
 
 **Guideline:** a single source (one system, one session, one corpus
 pass) should not contribute more than **5 new numbered items** per

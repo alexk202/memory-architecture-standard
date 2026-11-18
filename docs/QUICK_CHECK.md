@@ -1,6 +1,6 @@
 # Quick Check: 13 Critical Items for AI Memory
 
-**Standard:** MAQS v1.10 · 13 of 99 items, all marked [CRIT] · about one hour
+**Standard:** MAQS v1.10.1 · 13 of 99 items, all marked [CRIT] · about one hour
 
 This page is for anyone who builds or runs an assistant or agent with long-term memory, local or hosted, and wants a first look before a full audit.
 

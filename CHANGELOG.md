@@ -55,6 +55,36 @@ All notable changes to the Memory Architecture Quality Standard.
   from two models in one index under one marker. Same mechanism as the P8
   lineage above, audited-system side; awaiting measured lineage (§2.5)
 
+## [1.10.1] - 2026-11-18
+
+### Fixed (standard header, 2026-11-18)
+
+- The version line in the header of `STANDARD.md` and its Russian mirror
+  declared **1.9 (2026-11-03)**. It was last updated by the 1.9 release and
+  was missed by both 1.9.1 and 1.10, so the 1.10 snapshot — the one archived
+  under its DOI — misstated its own version while carrying 99 items. The item
+  set, the markers and the pass/fail logic are unchanged: an audit run against
+  1.10 stays valid, and 1.10.1 differs from it only in what the document says
+  about itself.
+
+### Added (release tooling, 2026-11-18)
+
+- `scripts/check_version_sync.py` — a hard gate over the stated version, the
+  release date and the item counts. Single source: the newest release heading
+  in `CHANGELOG.md`. It checks both checklist headers, the README version and
+  item badges, the README intro and total, the QUICK_CHECK header and link
+  text, the report template's version field and footer, the template's verdict
+  row count, `CITATION.cff` (version and `date-released`), and that both
+  checklist files carry the same number of items. The hole it closes: the
+  release sync checklist named items, wording and the protocol table but not
+  the header line, and per-release greps searched for item counts and for
+  "v1.9" with the prefix, which does not match "1.9".
+
+### Changed (release sync checklist, 2026-11-18)
+
+- `docs/ADMISSION_CRITERIA.md` §9: the `STANDARD.md` and RU mirror rows now
+  name the version and date in the header.
+
 ## [1.10] - 2026-11-18
 
 *Checklist 98 → 99: D12 (retrieval). Item set changed — audits must run

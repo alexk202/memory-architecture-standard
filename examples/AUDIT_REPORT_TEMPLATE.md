@@ -1,6 +1,6 @@
 # Audit Report Template
 
-**Standard version:** MAQS v1.10
+**Standard version:** MAQS v1.10.1
 **Audit date:** YYYY-MM-DD
 **System:** [System name / identifier]
 **Audited version:** <commit SHA> — or — no-SHA: <reason>; reconstructed as <SHA> by <method>
@@ -241,4 +241,4 @@ with "Suggested Priorities (auditor's view, non-binding)" — no sprints, no sta
 
 ---
 
-*Generated using MAQS v1.10 Audit Report Template*
+*Generated using MAQS v1.10.1 Audit Report Template*

@@ -76,6 +76,17 @@ def main() -> int:
         if got != expected:
             problems.append(f"{label} ({rel}): {got} != expected {expected}")
 
+    cff = read("CITATION.cff")
+    for pattern, label, expected in (
+        (r'version: "(\d+\.\d+(?:\.\d+)?)"', "CITATION.cff version", version),
+        (r'date-released: "(\d{4}-\d{2}-\d{2})"', "CITATION.cff date-released", date),
+    ):
+        found = re.findall(pattern, cff)
+        if not found:
+            problems.append(f"{label}: pattern not found in CITATION.cff")
+        elif any(f != expected for f in found):
+            problems.append(f"{label}: {found} != expected {expected!r}")
+
     # --- template verdict rows ----------------------------------------
     rows = len(re.findall(r"^\| \*\*[0-9A-Z]", read("examples/AUDIT_REPORT_TEMPLATE.md"), re.M))
     if rows != en_items:
