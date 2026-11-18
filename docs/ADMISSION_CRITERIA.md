@@ -233,8 +233,8 @@ event recorded with divergent keys across documents.
 
 | File | Sync points |
 |------|-------------|
-| `STANDARD.md` | New items in their sections; expanded wording for extensions; protocol table (section counts + total); preparation phase gate phrase ("P1–Pn") and new P-step text |
-| `translations/STANDARD_RU.md` | Mirror of every STANDARD.md change in Russian |
+| `STANDARD.md` | Version and date in the header (`**Version:** X.Y (YYYY-MM-DD)`); new items in their sections; expanded wording for extensions; protocol table (section counts + total); preparation phase gate phrase ("P1–Pn") and new P-step text |
+| `translations/STANDARD_RU.md` | Mirror of every STANDARD.md change in Russian, including the version and date in the header (`**Версия:**`) |
 | `README.md` | Badge (`checklist-N_items`); intro sentence ("A N-item…"); section table (per-section counts + total row); docs section (new docs/) |
 | `CHANGELOG.md` | `[Unreleased]` section content; backlog updates (resolved/renumbered candidates) |
 | `docs/ADMISSION_CRITERIA.md` | Growth budget table (section 5) and its header sentence ("targets N at vX.Y") updated with the new release row |
