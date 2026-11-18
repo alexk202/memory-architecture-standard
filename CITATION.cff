@@ -7,7 +7,7 @@ authors:
     given-names: Aleksandr
 version: "1.10.1"
 date-released: "2026-11-18"
-doi: 10.5281/zenodo.24342495
+doi: 10.5281/zenodo.24354847
 license: CC-BY-SA-4.0
 repository-code: "https://github.com/alexk202/memory-architecture-standard"
 url: "https://github.com/alexk202/memory-architecture-standard"
@@ -28,5 +28,5 @@ preferred-citation:
   title: "Memory Architecture Quality Standard (MAQS)"
   version: "1.10.1"
   year: 2026
-  doi: 10.5281/zenodo.24342495
+  doi: 10.5281/zenodo.24354847
   url: "https://github.com/alexk202/memory-architecture-standard"

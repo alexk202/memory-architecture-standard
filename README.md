@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/badge/version-1.10.1-blue.svg)]()
 [![License](https://img.shields.io/badge/license-CC--BY--SA--4.0-green.svg)]()
 [![Items](https://img.shields.io/badge/checklist-99_items-orange.svg)]
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24342495.svg)](https://doi.org/10.5281/zenodo.24342495)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24354847.svg)](https://doi.org/10.5281/zenodo.24354847)
 
 ---
 
